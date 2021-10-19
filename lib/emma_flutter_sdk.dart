@@ -1,12 +1,17 @@
 import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:emma_flutter_sdk/src/defines.dart';
 import 'package:emma_flutter_sdk/src/inapp_message_request.dart';
 import 'package:emma_flutter_sdk/src/native_ad.dart';
+import 'package:emma_flutter_sdk/src/order.dart';
+import 'package:emma_flutter_sdk/src/product.dart';
 
 export 'src/defines.dart';
 export 'src/native_ad.dart';
 export 'src/inapp_message_request.dart';
+export 'src/order.dart';
+export 'src/product.dart';
 
 
 typedef void ReceivedNativeAdsHandler(List<EmmaNativeAd> nativeAds);
@@ -128,4 +133,30 @@ class EmmaFlutterSdk {
   Future<void> checkForRichPush() async {
     return await _channel.invokeMethod('checkForRichPush');
   }
+
+  /// This method starts the order and save it.
+  Future<void> startOrder(EmmaOrder order) async {
+    return await _channel.invokeMethod('startOrder', order.toMap());
+  }
+
+  /// This method adds one product to the initied order. If you want add multiple
+  /// products, you call this method multiples times.
+  Future<void> addProduct(EmmaProduct product) async {
+    return await _channel.invokeMethod('addProduct', product.toMap());
+  }
+
+  /// This method commits the order and send to server.
+  Future<void> trackOrder() async {
+    return await _channel.invokeMethod('trackOrder');
+  }
+
+  /// [iOS only] This method requests the permission to collect the IDFA.
+  Future<void> requestTrackingWithIdfa()  async {
+    return await _channel.invokeMethod('requestTrackingWithIdfa');
+  }
+
+  /// This method allows track location
+  Future<void> trackUserLocation() async {
+    return await _channel.invokeMethod('trackUserLocation');
+  } 
 }

@@ -8,9 +8,7 @@ class EmmaInAppMessageRequest {
   String templateId;
   bool batch;
 
-  EmmaInAppMessageRequest(InAppType inAppType) {
-    this.inAppType = inAppType;
-  }
+  EmmaInAppMessageRequest(this.inAppType);
 
   Map<String, dynamic> toMap() {
     return {

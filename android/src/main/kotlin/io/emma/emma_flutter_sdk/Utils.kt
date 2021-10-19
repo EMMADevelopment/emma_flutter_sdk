@@ -42,4 +42,11 @@ object Utils {
             channel.invokeMethod(method, args)
         })
     }
+
+    fun isValidField(field: Any?): Boolean {
+        field?.let {
+            return if (field is String) field.isNotEmpty() else true
+        }
+        return false
+    }
 }

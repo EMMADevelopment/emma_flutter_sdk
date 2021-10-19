@@ -1,8 +1,10 @@
+
+   
 //
-//  EmmaSerializer.swift
-//  
+//  Utils.swift
 //
-//  Created by Adrián Carrera on 12/11/2020.
+//  Created by Adrián Carrera on 16/03/2021.
+//  Copyright © 2021 EMMA. All rights reserved.
 //
 
 import EMMA_iOS

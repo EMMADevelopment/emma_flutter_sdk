@@ -39,14 +39,14 @@ class EMMAFlutterAppDelegate {
     @objc
     @available(iOS 10.0, *)
     func userNotificationCenter(_ center: UNUserNotificationCenter,  willPresent notification: UNNotification, withCompletionHandler   completionHandler: @escaping (_ options:   UNNotificationPresentationOptions) -> Void) {
-        EMMA.handlePush(notification.request.content.userInfo)
+        EMMA.handlePush(userInfo: notification.request.content.userInfo)
         completionHandler([.badge, .sound])
     }
     
     @objc
     @available(iOS 10.0, *)
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        EMMA.handlePush(response.notification.request.content.userInfo)
+        EMMA.handlePush(userInfo: response.notification.request.content.userInfo)
         completionHandler()
     }
     
@@ -145,6 +145,24 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
         case "openNativeAd":
             openNativeAd(call, result)
             break
+        case "startOrder":
+            startOrder(call, result)
+            break
+        case "addProduct":
+            addProduct(call, result)
+            break
+        case "trackOrder":
+            trackOrder(call, result)
+            break
+        case "cancelOrder":
+            cancelOrder(call, result)
+            break
+        case "requestTrackingWithIdfa":
+            requestTrackingWithIdfa(call, result)
+            break
+        case "trackUserLocation":
+            trackLocation(call, result);
+            break
         default:
             result(FlutterMethodNotImplemented)
             break
@@ -198,9 +216,9 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
         
         let eventRequest = EMMAEventRequest(token: eventToken)
         if let eventAttributes = args["eventAttributes"] as? Dictionary<String, AnyObject>  {
-            eventRequest?.attributes = eventAttributes
+            eventRequest.attributes = eventAttributes
         }
-        EMMA.trackEvent(eventRequest)
+        EMMA.trackEvent(request: eventRequest)
         result(nil)
     }
     
@@ -217,7 +235,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
                                      details: nil))
             return
         }
-        EMMA.trackExtraUserInfo(userAttributes)
+        EMMA.trackExtraUserInfo(info: userAttributes)
         result(nil)
     }
     
@@ -237,8 +255,9 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
         }
         
         let email = args["email"] as? String ?? ""
+        let extras = args["extras"] as? Dictionary<String, String>
         
-        EMMA.loginUser(userId, forMail: email)
+        EMMA.loginUser(userId: userId, forMail: email, andExtras: extras)
         result(nil)
     }
     
@@ -258,8 +277,9 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
         }
         
         let email = args["email"] as? String ?? ""
+        let extras = args["extras"] as? Dictionary<String, String>
         
-        EMMA.registerUser(userId, forMail: email)
+        EMMA.registerUser(userId:userId, forMail: email, andExtras: extras)
         result(nil)
     }
     
@@ -300,10 +320,12 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
             request.templateId = templateId
             request.isBatch = batch
             
-            EMMA.inAppMessage(request, with: self)
+            
+            
+            EMMA.inAppMessage(request: request, withDelegate: self)
         } else {
             let request = EMMAInAppRequest(type: requestType)
-            EMMA.inAppMessage(request)
+            EMMA.inAppMessage(request: request)
         }
         
         result(nil)
@@ -314,9 +336,9 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
             let pushDelegate = EMMAFlutterAppDelegate()
             if #available(iOS 10.0, *) {
                 pushDelegate.swizzlePushMethods()
+                EMMA.setPushNotificationsDelegate(delegate: applicationDelegate)
             }
-            EMMA.setPushSystemDelegate(applicationDelegate)
-            EMMA.setPushNotificationsDelegate(applicationDelegate)
+            EMMA.setPushSystemDelegate(delegate: applicationDelegate)
         }
        
         EMMA.startPushSystem()
@@ -327,7 +349,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
             return true
         }
         setPushDelegates()
-        EMMA.handlePush(notification as? [AnyHashable : Any])
+        EMMA.handlePush(userInfo: notification as! Dictionary<AnyHashable, Any>)
         
         return true
     }
@@ -370,9 +392,9 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
         }
         
         if (isInAppImpression) {
-            EMMA.sendImpression(communicationType, withId: String(campaignId))
+            EMMA.sendImpression(campaignType: communicationType, withId: String(campaignId))
         } else {
-            EMMA.sendClick(communicationType, withId: String(campaignId))
+            EMMA.sendClick(campaignType: communicationType, withId: String(campaignId))
         }
 
        result(nil)
@@ -393,7 +415,133 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
             return
         }
         
-        EMMA.openNativeAd(String(id))
+        EMMA.openNativeAd(campaignId: String(id))
+        result(nil)
+    }
+
+    func startOrder(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {         
+        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+            result(FlutterError.init(code: "BAD_ARGS",
+                                     message: "Can't find args",
+                                     details: nil))
+            return
+        }
+        
+        guard let orderId = args["orderId"] as? String else {
+            result(FlutterError.init(code: "BAD_ORDER_ID",
+                                     message: "Unknown order id",
+                                     details: nil))
+            return
+        }
+        
+        guard let totalPrice = args["totalPrice"] as? Float else {
+            result(FlutterError.init(code: "BAD_PRICE",
+                                     message: "Unknown total price",
+                                     details: nil))
+            return
+        }
+
+        guard let customerId = args["customerId"] as? String else {
+            result(FlutterError.init(code: "BAD_CUSTOMER_ID",
+                                     message: "Unknown customer id",
+                                     details: nil))
+            return
+        }
+        
+        
+        if let currencyCode = args["currencyCode"] as? String {
+            EMMA.setCurrencyCode(currencyCode: currencyCode)
+        }
+
+        let coupon = args["coupon"] as? String
+        let extras = args["extras"] as? Dictionary<String, String>
+        
+        EMMA.startOrder(orderId: orderId, andCustomer: customerId, withTotalPrice: totalPrice, withExtras: extras, assignCoupon: coupon)
+        result(nil)
+    }
+    
+    func addProduct(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+            result(FlutterError.init(code: "BAD_ARGS",
+                                     message: "Can't find args",
+                                     details: nil))
+            return
+        }
+        
+        guard let productId = args["productId"] as? String else {
+            result(FlutterError.init(code: "BAD_PRODUCT_ID",
+                                     message: "Unknown product id",
+                                     details: nil))
+            return
+        }
+        
+        guard let productName = args["productName"] as? String else {
+            result(FlutterError.init(code: "BAD_PRODUCT_NAME",
+                                     message: "Unknown product name",
+                                     details: nil))
+            return
+        }
+
+        guard let quantity = args["quantity"] as? Float else {
+            result(FlutterError.init(code: "BAD_QUANTITY_ID",
+                                     message: "Unknown quantity id",
+                                     details: nil))
+            return
+        }
+        
+        guard let price = args["price"] as? Float else {
+            result(FlutterError.init(code: "BAD_PRICE",
+                                     message: "Unknown price",
+                                     details: nil))
+            return
+        }
+        
+        
+
+        let extras = args["extras"] as? Dictionary<String, String>
+        
+        EMMA.addProduct(productId: productId, andName: productName, withQty: quantity, andPrice: price, withExtras: extras)
+        result(nil)
+    }
+    
+    func trackOrder(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        EMMA.trackOrder()
+        result(nil)
+    }
+
+    func cancelOrder(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+            result(FlutterError.init(code: "BAD_ARGS",
+                                     message: "Can't find args",
+                                     details: nil))
+            return
+        }
+        
+        guard let orderId = args["orderId"] as? String else {
+            result(FlutterError.init(code: "BAD_ORDER_ID",
+                                     message: "Unknown order id",
+                                     details: nil))
+            return
+        }
+
+
+        EMMA.cancelOrder(orderId: orderId);
+        result(nil)
+    }
+    
+    func requestTrackingWithIdfa(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        if #available(iOS 14.0, *) {
+            DispatchQueue.main.async {
+                EMMA.requestTrackingWithIdfa()
+            }
+        }
+        result(nil)
+    }
+
+    func trackLocation(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        DispatchQueue.main.async {
+            EMMA.trackLocation()
+        }
         result(nil)
     }
 }

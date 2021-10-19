@@ -86,7 +86,7 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Center(
             child: Column(children: <Widget>[
-          RaisedButton(
+          ElevatedButton(
             onPressed: () async {
               await EmmaFlutterSdk.shared.trackEvent(
                   "2eb78caf404373625020285e92df446b");
@@ -94,28 +94,39 @@ class _MyAppState extends State<MyApp> {
             child:
                 const Text('Send Test Event', style: TextStyle(fontSize: 20)),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: () async {
               await EmmaFlutterSdk.shared.loginUser("1", "emma@flutter.dev");
             },
             child:
                 const Text('Send Login Event', style: TextStyle(fontSize: 20)),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: () async {
               await EmmaFlutterSdk.shared.registerUser("1", "emma@flutter.dev");
             },
             child: const Text('Send Register Event',
                 style: TextStyle(fontSize: 20)),
           ),
-          RaisedButton(
+          ElevatedButton(
+            onPressed: () async {
+              var order = new EmmaOrder("EMMA", 100, "1");
+              await EmmaFlutterSdk.shared.startOrder(order);
+              var product = new EmmaProduct('SDK', 'SDK', 1, 100);
+              await EmmaFlutterSdk.shared.addProduct(product);
+              await EmmaFlutterSdk.shared.trackOrder();
+            },
+            child: const Text('Send Order',
+                style: TextStyle(fontSize: 20)),
+          ),
+          ElevatedButton(
             onPressed: () async {
               await EmmaFlutterSdk.shared.inAppMessage(new EmmaInAppMessageRequest(InAppType.startview));
             },
             child: const Text('Check For StartView',
                 style: TextStyle(fontSize: 20)),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: () async {
               var request = new EmmaInAppMessageRequest(InAppType.nativeAd);
               request.batch = true;
@@ -125,13 +136,30 @@ class _MyAppState extends State<MyApp> {
             child: const Text('Check For NativeAd',
                 style: TextStyle(fontSize: 20)),
           ),
-            RaisedButton(
-              onPressed: () async {
-                await EmmaFlutterSdk.shared.checkForRichPush();
-              },
-              child: const Text('Check For Rich Push',
-                  style: TextStyle(fontSize: 20)),
-            )
+          
+          ElevatedButton(
+            onPressed: () async {
+              await EmmaFlutterSdk.shared.checkForRichPush();
+            },
+            child: const Text('Check For Rich Push (Android only)',
+                style: TextStyle(fontSize: 20)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await EmmaFlutterSdk.shared.requestTrackingWithIdfa();
+            },
+
+            child: const Text('Track IDFA (iOS only)',
+                style: TextStyle(fontSize: 20)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await EmmaFlutterSdk.shared.trackUserLocation();
+            },
+
+            child: const Text('Track Location',
+                style: TextStyle(fontSize: 20)),
+          ),
         ])),
       ),
     );

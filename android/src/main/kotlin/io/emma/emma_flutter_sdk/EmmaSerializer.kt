@@ -5,6 +5,12 @@ import io.emma.android.model.EMMACampaign
 import io.emma.android.model.EMMANativeAd
 import io.emma.android.model.EMMANativeAdField
 import io.emma.android.utils.EMMALog
+import org.json.JSONArray
+
+import org.json.JSONException
+
+
+
 
 
 object EmmaSerializer {
@@ -27,10 +33,20 @@ object EmmaSerializer {
         return nativeAdMap
     }
 
-    private fun nativeAdFieldsToMap(fields: Map<String, EMMANativeAdField>): Map<String, String> {
-        val fieldsMap = HashMap<String, String>()
+    private fun processNativeAdContainer(fieldsContainer: List<Map<String, EMMANativeAdField>>):
+            ArrayList<Map<String, Any>> {
+        val processFieldsContainer = ArrayList<Map<String, Any>>()
+        for (fields in fieldsContainer) {
+            processFieldsContainer.add(nativeAdFieldsToMap(fields))
+        }
+        return processFieldsContainer
+    }
+
+    private fun nativeAdFieldsToMap(fields: Map<String, EMMANativeAdField>): Map<String, Any> {
+        val fieldsMap = HashMap<String, Any>()
         for ((_, value) in fields.entries) {
-            fieldsMap[value.fieldName] = value.fieldValue
+            fieldsMap[value.fieldName] =
+                    if(value.fieldContainer != null) processNativeAdContainer(value.fieldContainer!!) else value.fieldValue!!
         }
         return fieldsMap
     }

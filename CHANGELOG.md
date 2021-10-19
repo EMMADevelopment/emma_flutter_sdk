@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+* Added purchase methods, track location and request tracking IDFA (iOS)
+
 ## 1.0.9
 
 * Added new method checkForRichPush for Android

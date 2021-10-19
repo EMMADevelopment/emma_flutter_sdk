@@ -80,6 +80,21 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       "checkForRichPush" -> {
         checkForRichPush(result)
       }
+      "startOrder" -> {
+        startOrder(call, result)
+      }
+      "addProduct" -> {
+        addProduct(call, result)
+      }
+      "trackOrder" -> {
+        trackOrder(result)
+      }
+      "cancelOrder" -> {
+        cancelOrder(call, result)
+      }
+      "trackUserLocation" -> {
+        trackLocation(result)
+      }
       else -> {
         EMMALog.w("Method ${call.method} not implemented")
         Utils.runOnMainThread(Runnable { result.notImplemented() })
@@ -340,6 +355,99 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
 
   private fun checkForRichPush(@NonNull result: Result) {
     EMMA.getInstance().checkForRichPushUrl()
+    result.success(null)
+  }
+
+  private fun startOrder(@NonNull call: MethodCall, @NonNull result: Result) {
+    val orderId = call.argument<String>("orderId")
+    val totalPrice = call.argument<Double>("totalPrice")
+    val customerId = call.argument<String>("customerId")
+    val currencyCode = call.argument<String>("currencyCode")
+    val coupon = call.argument<String>("coupon")
+    val extras = call.argument<HashMap<String, String>>("extras")
+
+    if (!Utils.isValidField(orderId)) {
+      EMMALog.e("Param orderId must be mandatory in startOrder method")
+      result.success(null)
+      return
+    }
+
+    if (!Utils.isValidField(totalPrice)) {
+      EMMALog.e("Param totalPrice must be mandatory in startOrder method")
+      result.success(null)
+      return
+    }
+
+    if (!Utils.isValidField(customerId)) {
+      EMMALog.e("Param customerId must be mandatory in startOrder method")
+      result.success(null)
+      return
+    }
+
+    EMMA.getInstance().startOrder(orderId, customerId, totalPrice!!.toFloat(), currencyCode, coupon, extras)
+    result.success(null)
+  }
+
+  private fun addProduct(@NonNull call: MethodCall, @NonNull result: Result) {
+    val productId = call.argument<String>("productId")
+    val productName = call.argument<String>("productName")
+    val quantity = call.argument<Int>("quantity")
+    val price = call.argument<Double>("price")
+    val extras = call.argument<HashMap<String, String>>("extras")
+
+    if (!Utils.isValidField(productId)) {
+      EMMALog.e("Param productId must be mandatory in addProduct method")
+      result.success(null)
+      return
+    }
+
+    if (!Utils.isValidField(productName)) {
+      EMMALog.e("Param productName must be mandatory in addProduct method")
+      result.success(null)
+      return
+    }
+
+    if (!Utils.isValidField(quantity)) {
+      EMMALog.e("Param quantity must be mandatory in addProduct method")
+      result.success(null)
+      return
+    }
+
+    if (!Utils.isValidField(price)) {
+      EMMALog.e("Param price must be mandatory in addProduct method")
+      result.success(null)
+      return
+    }
+
+    EMMA.getInstance().addProduct(productId, productName, quantity!!.toFloat(), price!!.toFloat(), extras)
+    result.success(null)
+  }
+
+  private fun trackOrder(@NonNull result: Result) {
+    EMMA.getInstance().trackOrder()
+    result.success(null)
+  }
+
+  private fun cancelOrder(@NonNull call: MethodCall, @NonNull result: Result) {
+    val orderId = call.argument<String>("orderId")
+
+    if (!Utils.isValidField(orderId)) {
+      EMMALog.e("Param orderId must be mandatory in cancelOrder method")
+      result.success(null)
+      return
+    }
+
+    EMMA.getInstance().cancelOrder(orderId)
+    result.success(null)
+  }
+
+  private fun trackLocation(@NonNull result: Result) {
+    activity.let {
+      EMMA.getInstance().setCurrentActivity(it)
+    }
+    Utils.runOnMainThread(Runnable {
+      EMMA.getInstance().startTrackingLocation()
+    })
     result.success(null)
   }
 }

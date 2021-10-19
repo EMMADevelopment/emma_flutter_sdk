@@ -28,10 +28,10 @@ On Android you must include notification icon as a drawable.
 - [x] Session Tracking (Start Session)
 - [x] Event Tracking
 - [x] Update User Profile
-- [ ] Default events
+- [x] Default events
   - [x] Login
   - [x] Register
-  - [ ] Purchase
+  - [x] Purchase
 - [ ] Powlink Support
 - [x] Push System Support
   - [x] Receive Push
