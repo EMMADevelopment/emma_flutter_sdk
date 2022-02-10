@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'emma_flutter_sdk'
-  s.version          = '1.0.0'
+  s.version          = '1.1.0'
   s.summary          = 'EMMA SDK implementation for flutter'
   s.description      = <<-DESC
   EMMA SDK implementation for flutter
@@ -22,5 +22,5 @@ Pod::Spec.new do |s|
   s.swift_version = '5.0'
 
   # dependencies
-  s.dependency 'eMMa', '~> 4.9.3'
+  s.dependency 'eMMa', '~> 4.10.1'
 end

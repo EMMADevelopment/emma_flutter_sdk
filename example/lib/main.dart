@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initEMMAPush() async {
-    return await EmmaFlutterSdk.shared.startPushSystem('notification_icon');
+    return await EmmaFlutterSdk.shared.startPushSystem('icimage');
   }
 
   Future<void> trackUserProfile() async {

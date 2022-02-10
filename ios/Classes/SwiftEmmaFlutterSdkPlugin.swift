@@ -46,7 +46,7 @@ class EMMAFlutterAppDelegate {
     @objc
     @available(iOS 10.0, *)
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        EMMA.handlePush(userInfo: response.notification.request.content.userInfo)
+        EMMA.handlePush(userInfo: response.notification.request.content.userInfo, actionIdentifier: response.actionIdentifier)
         completionHandler()
     }
     
