@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.1
+* Updated SDKs to version 4.10.+
+
 ## 1.1.0
 
 * Added purchase methods, track location and request tracking IDFA (iOS)

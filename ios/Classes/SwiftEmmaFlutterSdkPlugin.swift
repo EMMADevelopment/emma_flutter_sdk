@@ -88,10 +88,7 @@ class EMMAFlutterAppDelegate {
                 class_addMethod(appDelegateClass, swizzledSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod))
             }
         }
-        
-        
     }
-    
 }
 
 public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
