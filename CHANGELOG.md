@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2
+
+- Fix crash version SDK 4.10.0 y 4.10.1 when app started and recover ASA attribution.
+
 ## 1.1.1
 * Updated SDKs to version 4.10.+
 
