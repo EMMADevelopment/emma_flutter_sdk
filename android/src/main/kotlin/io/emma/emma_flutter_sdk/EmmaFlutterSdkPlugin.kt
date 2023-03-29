@@ -3,13 +3,16 @@ package io.emma.emma_flutter_sdk
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build;
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import io.emma.android.EMMA
 import io.emma.android.interfaces.EMMABatchNativeAdInterface
 import io.emma.android.interfaces.EMMAInAppMessageInterface
 import io.emma.android.interfaces.EMMANativeAdInterface
+import io.emma.android.interfaces.EMMAPermissionInterface
 import io.emma.android.utils.EMMALog
+import io.emma.android.utils.EMMAUtils
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -69,10 +72,10 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
         startPushSystem(call, result)
       }
       "sendInAppImpression" -> {
-        sendInAppImpressionOrClick(true, call, result)
+        sendInAppImpressionOrClick(InAppAction.Impression, call, result)
       }
       "sendInAppClick" -> {
-        sendInAppImpressionOrClick(false, call, result)
+        sendInAppImpressionOrClick(InAppAction.Click, call, result)
       }
       "openNativeAd" -> {
         openNativeAd(call, result)
@@ -94,6 +97,15 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       }
       "trackUserLocation" -> {
         trackLocation(result)
+      } 
+      "setCustomerId" -> {
+        setCustomerId(call, result)
+      }
+      "areNotificationsEnabled" -> {
+        areNotificationsEnabled(result)
+      }
+      "requestNotificationsPermission" -> {
+        requestNotificationPermission(call, result)
       }
       else -> {
         EMMALog.w("Method ${call.method} not implemented")
@@ -303,7 +315,7 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     return mapNativeAds
   }
 
-  private fun sendInAppImpressionOrClick(sendImpression: Boolean, @NonNull call: MethodCall, @NonNull result: Result) {
+  private fun sendInAppImpressionOrClick(action: InAppAction, @NonNull call: MethodCall, @NonNull result: Result) {
 
     val type = call.argument<String>("type")
     val campaignId = call.argument<Int>("campaignId")
@@ -326,7 +338,7 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     val campaign = EMMACampaign(campaignType)
     campaign.campaignID = campaignId
 
-    if (sendImpression) {
+    if (action == InAppAction.Impression) {
       EMMA.getInstance().sendInAppImpression(communicationType, campaign)
     } else {
       EMMA.getInstance().sendInAppClick(communicationType, campaign)
@@ -449,5 +461,49 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       EMMA.getInstance().startTrackingLocation()
     })
     result.success(null)
+  }
+
+  private fun setCustomerId(@NonNull call: MethodCall, @NonNull result: Result) {
+    val customerId = call.argument<String>("customerId")
+    if (!Utils.isValidField(customerId)) {
+      EMMALog.e("Param customerId must be mandatory in setCustomerId method")
+      result.success(null)
+      return
+    }
+    EMMA.getInstance().setCustomerId(customerId);
+    result.success(null)
+  }
+  
+  private fun areNotificationsEnabled(@NonNull result: Result) {
+      result.success(EMMA.getInstance().areNotificationsEnabled())
+  }
+
+  private fun requestNotificationPermission(@NonNull call: MethodCall, @NonNull result: Result) {
+      if (Build.VERSION.SDK_INT < 33 || EMMAUtils.getTargetSdkVersion(applicationContext) < 33) {
+        Utils.executeOnMainThread(channel, "Emma#onPermissionStatus", PermissionStatus.Unsupported.ordinal)
+        return
+      }
+
+      val permissionListener = object: EMMAPermissionInterface {
+          override fun onPermissionGranted(permission: String, isFirstTime: Boolean) {
+            Utils.executeOnMainThread(channel, "Emma#onPermissionStatus", PermissionStatus.Granted.ordinal)
+          }
+
+          override fun onPermissionDenied(permission: String) {
+            Utils.executeOnMainThread(channel, "Emma#onPermissionStatus", PermissionStatus.Denied.ordinal)
+          }
+
+          override fun onPermissionWaitingForAction(permission: String) { }
+
+          override fun onPermissionShouldShowRequestPermissionRationale(permission: String) {
+            Utils.executeOnMainThread(channel, "Emma#onPermissionStatus", PermissionStatus.ShouldPermissionRationale.ordinal)
+          }
+      }
+
+      Utils.runOnMainThread {
+          EMMA.getInstance().setCurrentActivity(activity);
+          EMMA.getInstance().requestNotificationPermission(permissionListener)
+      }
+      result.success(null)    
   }
 }

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.0
+- Update native sdk dependencies and added android 13 support.
+
 ## 1.1.2
 
 - Fix crash version SDK 4.10.0 y 4.10.1 when app started and recover ASA attribution.

@@ -160,6 +160,9 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
         case "trackUserLocation":
             trackLocation(call, result);
             break
+        case "setCustomerId":
+            setCustomerId(call, result)
+            break
         default:
             result(FlutterMethodNotImplemented)
             break
@@ -539,6 +542,25 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
         DispatchQueue.main.async {
             EMMA.trackLocation()
         }
+        result(nil)
+    }
+
+    public func setCustomerId(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+            result(FlutterError.init(code: "BAD_ARGS",
+                                     message: "Can't find args",
+                                     details: nil))
+            return
+        }
+
+        guard let customerId = args["customerId"] as? String else {
+            result(FlutterError.init(code: "BAD_CUSTOMER_ID",
+                                     message: "Unknown customer id",
+                                     details: nil))
+            return
+        }
+        
+        EMMA.setCustomerId(customerId: customerId)
         result(nil)
     }
 }

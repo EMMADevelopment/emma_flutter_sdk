@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
 import 'package:emma_flutter_sdk/emma_flutter_sdk.dart';
@@ -23,14 +24,14 @@ class _MyAppState extends State<MyApp> {
     initEMMA()
         .then((value) => initEMMAPush())
         .then((value) => trackUserProfile());
-
   }
 
   Future<void> initEMMA() async {
-    await EmmaFlutterSdk.shared.startSession('emmaflutter2BMRb2NQ0',
-        debugEnabled: true);
+    await EmmaFlutterSdk.shared
+        .startSession('emmaflutter2BMRb2NQ0', debugEnabled: true);
 
-    EmmaFlutterSdk.shared.setReceivedNativeAdsHandler((List<EmmaNativeAd> nativeAds){
+    EmmaFlutterSdk.shared
+        .setReceivedNativeAdsHandler((List<EmmaNativeAd> nativeAds) {
       nativeAds.forEach((nativeAd) {
         print(nativeAd.toMap());
       });
@@ -42,7 +43,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> trackUserProfile() async {
-    return await EmmaFlutterSdk.shared.trackExtraUserInfo({'TEST_TAG': 'TEST VALUE'});
+    return await EmmaFlutterSdk.shared
+        .trackExtraUserInfo({'TEST_TAG': 'TEST VALUE'});
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -66,11 +68,13 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> sendNativeAdImpression(EmmaNativeAd nativeAd) async {
-    return await EmmaFlutterSdk.shared.sendInAppImpression(InAppType.nativeAd, nativeAd.id);
+    return await EmmaFlutterSdk.shared
+        .sendInAppImpression(InAppType.nativeAd, nativeAd.id);
   }
 
   Future<void> sendNativeAdClick(EmmaNativeAd nativeAd) async {
-    return await EmmaFlutterSdk.shared.sendInAppClick(InAppType.nativeAd, nativeAd.id);
+    return await EmmaFlutterSdk.shared
+        .sendInAppClick(InAppType.nativeAd, nativeAd.id);
   }
 
   Future<void> openNativeAd(EmmaNativeAd nativeAd) async {
@@ -84,83 +88,128 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('EMMA FLUTTER SAMPLE APP'),
         ),
-        body: Center(
+        body: Container(
+            margin: const EdgeInsets.only(left: 15.0, right: 15.0),
             child: Column(children: <Widget>[
-          ElevatedButton(
-            onPressed: () async {
-              await EmmaFlutterSdk.shared.trackEvent(
-                  "2eb78caf404373625020285e92df446b");
-            },
-            child:
-                const Text('Send Test Event', style: TextStyle(fontSize: 20)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await EmmaFlutterSdk.shared.loginUser("1", "emma@flutter.dev");
-            },
-            child:
-                const Text('Send Login Event', style: TextStyle(fontSize: 20)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await EmmaFlutterSdk.shared.registerUser("1", "emma@flutter.dev");
-            },
-            child: const Text('Send Register Event',
-                style: TextStyle(fontSize: 20)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              var order = new EmmaOrder("EMMA", 100, "1");
-              await EmmaFlutterSdk.shared.startOrder(order);
-              var product = new EmmaProduct('SDK', 'SDK', 1, 100);
-              await EmmaFlutterSdk.shared.addProduct(product);
-              await EmmaFlutterSdk.shared.trackOrder();
-            },
-            child: const Text('Send Order',
-                style: TextStyle(fontSize: 20)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await EmmaFlutterSdk.shared.inAppMessage(new EmmaInAppMessageRequest(InAppType.startview));
-            },
-            child: const Text('Check For StartView',
-                style: TextStyle(fontSize: 20)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              var request = new EmmaInAppMessageRequest(InAppType.nativeAd);
-              request.batch = true;
-              request.templateId = "template1";
-              await EmmaFlutterSdk.shared.inAppMessage(request);
-            },
-            child: const Text('Check For NativeAd',
-                style: TextStyle(fontSize: 20)),
-          ),
-          
-          ElevatedButton(
-            onPressed: () async {
-              await EmmaFlutterSdk.shared.checkForRichPush();
-            },
-            child: const Text('Check For Rich Push (Android only)',
-                style: TextStyle(fontSize: 20)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await EmmaFlutterSdk.shared.requestTrackingWithIdfa();
-            },
-
-            child: const Text('Track IDFA (iOS only)',
-                style: TextStyle(fontSize: 20)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await EmmaFlutterSdk.shared.trackUserLocation();
-            },
-
-            child: const Text('Track Location',
-                style: TextStyle(fontSize: 20)),
-          ),
-        ])),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(40),
+                ),
+                onPressed: () async {
+                  await EmmaFlutterSdk.shared
+                      .trackEvent("2eb78caf404373625020285e92df446b");
+                },
+                child: const Text('Send Test Event',
+                    style: TextStyle(fontSize: 20)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(40),
+                ),
+                onPressed: () async {
+                  await EmmaFlutterSdk.shared
+                      .loginUser("1", "emma@flutter.dev");
+                },
+                child: const Text('Send Login Event',
+                    style: TextStyle(fontSize: 20)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(40),
+                ),
+                onPressed: () async {
+                  await EmmaFlutterSdk.shared
+                      .registerUser("1", "emma@flutter.dev");
+                },
+                child: const Text('Send Register Event',
+                    style: TextStyle(fontSize: 20)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(40),
+                ),
+                onPressed: () async {
+                  var order = new EmmaOrder("EMMA", 100, "1");
+                  await EmmaFlutterSdk.shared.startOrder(order);
+                  var product = new EmmaProduct('SDK', 'SDK', 1, 100);
+                  await EmmaFlutterSdk.shared.addProduct(product);
+                  await EmmaFlutterSdk.shared.trackOrder();
+                },
+                child: const Text('Send Order', style: TextStyle(fontSize: 20)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(40),
+                ),
+                onPressed: () async {
+                  await EmmaFlutterSdk.shared.inAppMessage(
+                      new EmmaInAppMessageRequest(InAppType.startview));
+                },
+                child: const Text('Check For StartView',
+                    style: TextStyle(fontSize: 20)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(40),
+                ),
+                onPressed: () async {
+                  var request = new EmmaInAppMessageRequest(InAppType.nativeAd);
+                  request.batch = true;
+                  request.templateId = "template1";
+                  await EmmaFlutterSdk.shared.inAppMessage(request);
+                },
+                child: const Text('Check For NativeAd',
+                    style: TextStyle(fontSize: 20)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(40),
+                ),
+                onPressed: () async {
+                  await EmmaFlutterSdk.shared.checkForRichPush();
+                },
+                child: const Text('Check For Rich Push (Android only)',
+                    style: TextStyle(fontSize: 20)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(40),
+                ),
+                onPressed: () async {
+                  await EmmaFlutterSdk.shared.requestTrackingWithIdfa();
+                },
+                child: const Text('Track IDFA (iOS only)',
+                    style: TextStyle(fontSize: 20)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(40),
+                ),
+                onPressed: () async {
+                  await EmmaFlutterSdk.shared.trackUserLocation();
+                },
+                child: const Text('Track Location',
+                    style: TextStyle(fontSize: 20)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(40),
+                ),
+                onPressed: () async {
+                  if (Platform.isAndroid) {
+                    // Request notification permission for Android 13
+                    EmmaFlutterSdk.shared.setPermissionStatusHandler((status) {
+                      print('Notifications permission status: ' +
+                          status.toString());
+                    });
+                    await EmmaFlutterSdk.shared
+                        .requestNotificationsPermission();
+                  }
+                },
+                child: const Text('Notifications Permission (Android only)',
+                    style: TextStyle(fontSize: 20)),
+              ),
+            ])),
       ),
     );
   }

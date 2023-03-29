@@ -1,7 +1,7 @@
 PODS:
-  - eMMa (4.10.2)
-  - emma_flutter_sdk (1.1.2):
-    - eMMa (~> 4.10.2)
+  - eMMa (4.11.4)
+  - emma_flutter_sdk (1.2.0):
+    - eMMa (~> 4.11.4)
     - Flutter
   - Flutter (1.0.0)
 
@@ -20,8 +20,8 @@ EXTERNAL SOURCES:
     :path: Flutter
 
 SPEC CHECKSUMS:
-  eMMa: f1a3f4cbe5a8cfe44421f68346b890b26ebf1b63
-  emma_flutter_sdk: 21e17452fc1063cbe6769197c4d3593a216d1ae1
+  eMMa: 0507d769b7059a2098ddb91d372a2b980632a910
+  emma_flutter_sdk: 397ec9c1f9271a0df5e4835bca32d0f33dfb1528
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c

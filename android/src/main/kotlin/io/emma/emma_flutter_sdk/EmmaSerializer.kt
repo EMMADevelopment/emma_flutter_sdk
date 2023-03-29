@@ -10,9 +10,6 @@ import org.json.JSONArray
 import org.json.JSONException
 
 
-
-
-
 object EmmaSerializer {
 
     fun nativeAdToMap(nativeAd: EMMANativeAd): Map<String, Any>? {
