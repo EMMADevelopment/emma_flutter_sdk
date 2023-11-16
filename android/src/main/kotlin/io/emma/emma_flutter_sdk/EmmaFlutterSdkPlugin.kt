@@ -280,7 +280,7 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
 
   private fun onReceiveNativeAds(nativeAds: List<EMMANativeAd>) {
     val convertedNativeAds = convertNativeAdsToMap(nativeAds)
-    Utils.executeOnMainThread(channel, "Emma#onReceiveNativeAds", convertedNativeAds)
+    Utils.executeOnMainThread(channel, "Emma#onReceivedNativeAds", convertedNativeAds)
   }
 
   private fun startPushSystem(@NonNull call: MethodCall, @NonNull result: Result) {

@@ -14,9 +14,9 @@ class EmmaSerializer {
         return [
             "id": nativeAd.idPromo,
             "templateId": nativeAd.nativeAdTemplateId ?? "",
-            "cta": nativeAd.getField("CTA"),
+            "cta": nativeAd.getField("CTA") ?? "",
             "times": nativeAd.times,
-            "tag": nativeAd.tag ?? NSNull(),
+            "tag": nativeAd.tag ?? "",
             "params": nativeAd.params ?? [:],
             "showOn": nativeAd.openInSafari ? "browser" : "inapp",
             "fields": nativeAd.nativeAdContent as? [String: Any] ?? []

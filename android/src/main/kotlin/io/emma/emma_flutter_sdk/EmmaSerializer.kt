@@ -18,8 +18,8 @@ object EmmaSerializer {
             nativeAdMap["id"] = nativeAd.campaignID.toInt()
             nativeAdMap["templateId"] = nativeAd.templateId
             nativeAdMap["times"] = nativeAd.times.toInt()
-            nativeAdMap["tag"] = nativeAd.tag
-            nativeAdMap["cta"] = nativeAd.campaignUrl
+            nativeAdMap["tag"] = nativeAd.tag ?: ""
+            nativeAdMap["cta"] = nativeAd.campaignUrl ?: ""
             nativeAdMap["showOn"] = if(nativeAd.showOnWebView()) "inapp" else "browser"
             nativeAdMap["params"] = nativeAd.params
             nativeAdMap["fields"] = nativeAdFieldsToMap(nativeAd.nativeAdContent)

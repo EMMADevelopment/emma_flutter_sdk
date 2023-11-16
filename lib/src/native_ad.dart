@@ -4,9 +4,8 @@ class EmmaNativeAd {
   late Map<String, String> fields;
   late int times;
   late String showOn;
-
-  String? cta;
-  String? tag;
+  late String cta;
+  late String tag;
   Map<String, dynamic>? params;
 
   EmmaNativeAd();
