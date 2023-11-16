@@ -5,7 +5,7 @@
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
@@ -33,6 +33,38 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+      <activity
+        android:exported="true"
+        android:name="io.emma.android.activities.EMMADeepLinkActivity"
+        android:noHistory="true"
+        android:theme="@android:style/Theme.NoDisplay">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data android:scheme="emmaflutter"/>
+            </intent-filter>
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data
+                    android:host="emmaflutter.powlink.io"
+                    android:scheme="https"/>
+
+            </intent-filter>
+        </activity>
+
+       <meta-data
+           android:name="io.emma.DEEPLINK_OPEN_ACTIVITY"
+           android:value="io.emma.emma_flutter_sample.MainActivity"/>
 
        <service
            android:name="io.emma.android.push.EMMAFcmMessagingService"

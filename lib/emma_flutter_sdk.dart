@@ -1,20 +1,21 @@
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:emma_flutter_sdk/src/defines.dart';
 import 'package:emma_flutter_sdk/src/inapp_message_request.dart';
 import 'package:emma_flutter_sdk/src/native_ad.dart';
 import 'package:emma_flutter_sdk/src/order.dart';
 import 'package:emma_flutter_sdk/src/product.dart';
+import 'package:flutter/services.dart';
 
 export 'src/defines.dart';
-export 'src/native_ad.dart';
 export 'src/inapp_message_request.dart';
+export 'src/native_ad.dart';
 export 'src/order.dart';
 export 'src/product.dart';
 
 typedef void ReceivedNativeAdsHandler(List<EmmaNativeAd> nativeAds);
 typedef void PermissionStatusHandler(PermissionStatus status);
+typedef void DeepLinkHandler(String url);
 
 class EmmaFlutterSdk {
   static EmmaFlutterSdk shared = new EmmaFlutterSdk();
@@ -23,27 +24,35 @@ class EmmaFlutterSdk {
   MethodChannel _channel = const MethodChannel('emma_flutter_sdk');
 
   // event handlers
-  ReceivedNativeAdsHandler _onReceivedNativeAds;
-  PermissionStatusHandler _onPermissionStatus;
+  ReceivedNativeAdsHandler? _onReceivedNativeAds;
+  PermissionStatusHandler? _onPermissionStatus;
+  DeepLinkHandler? _deepLinkHandler;
+
+  String? _pendingDeepLink;
 
   EmmaFlutterSdk() {
     this._channel.setMethodCallHandler(_manageCallHandler);
   }
 
   Future<Null> _manageCallHandler(MethodCall call) async {
-    switch (call.method) {
-      case "Emma#onReceiveNativeAds":
-        List<dynamic> nativeAdsMap = call.arguments;
-        this._onReceivedNativeAds(nativeAdsMap
-            .map((nativeAdMap) =>
-                new EmmaNativeAd.fromMap(nativeAdMap.cast<String, dynamic>()))
-            .toList());
-        break;
-      case "Emma#onPermissionStatus":
-        int permissionStatusIndex = call.arguments;
-        this._onPermissionStatus(
-            PermissionStatus.values[permissionStatusIndex]);
-        break;
+    if (call.method == "Emma#onReceivedNativeAds" &&
+        this._onReceivedNativeAds != null) {
+      List<dynamic> nativeAdsMap = call.arguments;
+      this._onReceivedNativeAds!(nativeAdsMap
+          .map((nativeAdMap) =>
+              new EmmaNativeAd.fromMap(nativeAdMap.cast<String, dynamic>()))
+          .toList());
+    } else if (call.method == "Emma#onPermissionStatus" &&
+        this._onPermissionStatus != null) {
+      int permissionStatusIndex = call.arguments;
+      this._onPermissionStatus!(PermissionStatus.values[permissionStatusIndex]);
+    } else if (call.method == "Emma#onDeepLinkReceived") {
+      String deeplink = call.arguments;
+      if (this._deepLinkHandler != null) {
+        this._deepLinkHandler!(deeplink);
+      } else {
+        this._pendingDeepLink = deeplink;
+      }
     }
     return null;
   }
@@ -53,6 +62,15 @@ class EmmaFlutterSdk {
 
   void setPermissionStatusHandler(PermissionStatusHandler handler) =>
       _onPermissionStatus = handler;
+
+  void setDeepLinkHandler(DeepLinkHandler deepLinkHandler) {
+    this._deepLinkHandler = deepLinkHandler;
+    String? pendignDeepLink = this._pendingDeepLink;
+    if (_pendingDeepLink != null) {
+      this._deepLinkHandler!(pendignDeepLink!);
+      this._pendingDeepLink = null;
+    }
+  }
 
   /// Retrieves current EMMA SDK Version
   Future<String> getEMMAVersion() async {
@@ -73,7 +91,7 @@ class EmmaFlutterSdk {
   /// Send an event to emma identified by [eventToken].
   /// You can also assign some attributtes to this event with [eventArguments]
   Future<void> trackEvent(String eventToken,
-      {Map<String, String> eventArguments}) async {
+      {Map<String, String>? eventArguments}) async {
     return await _channel.invokeMethod('trackEvent',
         {'eventToken': eventToken, 'eventArguments': eventArguments});
   }
@@ -111,8 +129,7 @@ class EmmaFlutterSdk {
   /// Optional param [notificationChannel] to define notification channel name for Android OS. Default app name.
   /// Optional param [notificationChannelId] to subscribe an existent channel.
   Future<void> startPushSystem(String notificationIcon,
-      {String notificationChannel = null,
-      String notificationChannelId = null}) async {
+      {String? notificationChannel, String? notificationChannelId}) async {
     return await _channel.invokeMethod('startPushSystem', {
       'notificationIcon': notificationIcon,
       'notificationChannel': notificationChannel,
@@ -189,5 +206,10 @@ class EmmaFlutterSdk {
   /// [Android only] This method requests notifications permission on Android 13 or higher devices.
   Future<void> requestNotificationsPermission() async {
     return await _channel.invokeMethod('requestNotificationsPermission');
+  }
+
+  // This method processes EMMA powlinks and send click event.
+  Future<void> handleLink(String url) async {
+    return await _channel.invokeMethod('handleLink', url);
   }
 }

@@ -4,7 +4,7 @@ class EmmaProduct {
   int quantity;
   double price;
   //optional
-  Map<String, String> extras;
+  Map<String, String>? extras;
 
   EmmaProduct(this.productId, this.productName, this.quantity, this.price);
 

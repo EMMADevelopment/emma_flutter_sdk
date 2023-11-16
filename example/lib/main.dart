@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:io' show Platform;
 
-import 'package:flutter/services.dart';
 import 'package:emma_flutter_sdk/emma_flutter_sdk.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(MyApp());
@@ -35,6 +35,10 @@ class _MyAppState extends State<MyApp> {
       nativeAds.forEach((nativeAd) {
         print(nativeAd.toMap());
       });
+    });
+
+    EmmaFlutterSdk.shared.setDeepLinkHandler((url) {
+      print(url);
     });
   }
 

@@ -1,25 +1,24 @@
-
 class EmmaNativeAd {
-  int id;
-  String templateId;
-  String cta;
-  int times;
-  String showOn;
-  String tag;
-  Map<String, dynamic> params;
-  Map<String, String> fields;
+  late int id;
+  late String templateId;
+  late Map<String, String> fields;
+  late int times;
+  late String showOn;
 
-  EmmaNativeAd() {
-  }
+  String? cta;
+  String? tag;
+  Map<String, dynamic>? params;
+
+  EmmaNativeAd();
 
   EmmaNativeAd.fromMap(Map<String, dynamic> json) {
-    this.id =  json["id"];
+    this.id = json["id"];
     this.templateId = json["templateId"];
     this.cta = json["cta"];
     this.times = json["times"];
     this.tag = json["tag"];
     this.showOn = json['showOn'];
-    this.params = json["params"] != null? Map.from(json["params"]) : null;
+    this.params = json["params"] != null ? Map.from(json["params"]) : null;
     this.fields = Map.from(json["fields"]);
   }
 

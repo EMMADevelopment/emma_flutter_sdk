@@ -1,7 +1,10 @@
 # Changelog
 
+## 1.3.0
+- Flutter compatibility with null safety and powlink support.
+
 ## 1.2.0
-- Update native sdk dependencies and added android 13 support.
+- Update native sdk dependencies and added Android 13 support.
 
 ## 1.1.2
 

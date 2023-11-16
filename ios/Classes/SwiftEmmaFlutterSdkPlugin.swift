@@ -27,11 +27,6 @@ class EMMAFlutterAppDelegate {
     }
     
     @objc
-    func application(_ application: UIApplication, didRegister notificationSettings: UIUserNotificationSettings) {
-        application.registerForRemoteNotifications()
-    }
-    
-    @objc
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Error registering notifications \(error.localizedDescription)");
     }
@@ -56,9 +51,6 @@ class EMMAFlutterAppDelegate {
         let appDelegateClass: AnyClass? = object_getClass(appDelegate)
         
         var swizzles = Array<(Selector, Selector)>()
-        
-        swizzles.append((#selector(FlutterAppDelegate.application(_:didRegister:)),
-                         #selector(EMMAFlutterAppDelegate.self.application(_:didRegister:))))
         
         swizzles.append((#selector(FlutterAppDelegate.application(_:didFailToRegisterForRemoteNotificationsWithError:)),
                          #selector(EMMAFlutterAppDelegate.self.application(_:didFailToRegisterForRemoteNotificationsWithError:))))
@@ -91,7 +83,7 @@ class EMMAFlutterAppDelegate {
     }
 }
 
-public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
+public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLifeCycleDelegate {
     
     private let channel: FlutterMethodChannel
     
@@ -162,6 +154,9 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
             break
         case "setCustomerId":
             setCustomerId(call, result)
+            break
+        case "handleLink":
+            handleLink(call, result)
             break
         default:
             result(FlutterMethodNotImplemented)
@@ -545,7 +540,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
         result(nil)
     }
 
-    public func setCustomerId(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+    func setCustomerId(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let args = call.arguments as? Dictionary<String, AnyObject> else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
@@ -563,6 +558,59 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin {
         EMMA.setCustomerId(customerId: customerId)
         result(nil)
     }
+
+    func handleLink(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+            result(FlutterError.init(code: "BAD_ARGS",
+                                     message: "Can't find args",
+                                     details: nil))
+            return
+        }
+        guard let urlStr = args["url"] as? String else {
+            result(FlutterError.init(code: "BAD_URL",
+                                     message: "Unknown url param",
+                                     details: nil))
+            return
+        }
+        
+        
+        guard let url = URL(string: urlStr) else {
+            result(FlutterError.init(code: "BAD_URL_FORMAT",
+                                     message: "Cannot convert string to URL",
+                                     details: nil))
+            return
+        }
+        
+        EMMA.handleLink(url: url)
+        result(nil);
+    }
+    
+    private func processDeepLink(url: URL) {
+        EMMA.handleLink(url: url)
+        DispatchQueue.main.async {
+            self.channel.invokeMethod("Emma#onDeepLinkReceived", arguments: url.absoluteString)
+        }
+    }
+    
+    public func application(_ application: UIApplication, open url: URL, sourceApplication: String, annotation: Any) -> Bool {
+        processDeepLink(url: url)
+        return true
+    }
+
+    public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        processDeepLink(url: url)
+        return true
+    }
+    
+    
+    public func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]) -> Void) -> Bool {
+        guard let webpageUrl = userActivity.webpageURL else {
+            return false
+        }
+        
+        processDeepLink(url: webpageUrl)
+        return true
+    }
 }
 
 extension SwiftEmmaFlutterSdkPlugin: EMMAInAppMessageDelegate {
@@ -571,7 +619,7 @@ extension SwiftEmmaFlutterSdkPlugin: EMMAInAppMessageDelegate {
             return EmmaSerializer.nativeAdToDictionary(nativeAd)
         })
         DispatchQueue.main.async {
-            self.channel.invokeMethod("Emma#onReceiveNativeAds", arguments: convertedNativeAd)
+            self.channel.invokeMethod("Emma#onReceivedNativeAds", arguments: convertedNativeAd)
         }
     }
     

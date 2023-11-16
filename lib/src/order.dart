@@ -1,12 +1,11 @@
-
 class EmmaOrder {
   String orderId;
   double totalPrice;
   String customerId;
   //optional
-  String currencyCode;
-  String coupon;
-  Map<String, String> extras;
+  String? currencyCode;
+  String? coupon;
+  Map<String, String>? extras;
 
   EmmaOrder(this.orderId, this.totalPrice, this.customerId);
 

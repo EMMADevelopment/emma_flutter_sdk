@@ -3,6 +3,7 @@ package io.emma.emma_flutter_sdk
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build;
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
@@ -107,6 +108,9 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       "requestNotificationsPermission" -> {
         requestNotificationPermission(call, result)
       }
+      "handleLink" -> {
+        handleLink(call, result)
+      }
       else -> {
         EMMALog.w("Method ${call.method} not implemented")
         Utils.runOnMainThread(Runnable { result.notImplemented() })
@@ -127,6 +131,7 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     activityPluginBinding = binding
     binding.addOnNewIntentListener(this)
     EMMA.getInstance().setCurrentActivity(activity)
+    processIntentIfNeeded(binding.activity.intent)
   }
 
   private fun removeBindingActivity() {
@@ -360,9 +365,16 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     result.success(null)
   }
 
-  override fun onNewIntent(intent: Intent?): Boolean {
-    EMMA.getInstance().onNewNotification(intent, true)
-    return true
+  private fun processIntentIfNeeded(currentIntent: Intent?) {
+    currentIntent?.let {
+      val action = it.action
+      val extras = it.extras
+      if (action != null && action == "android.intent.action.VIEW" && extras != null) {
+        if (it.data != null ) {
+          Utils.executeOnMainThread(channel, "Emma#onDeepLinkReceived", it.data.toString())
+        }
+      }
+    }
   }
 
   private fun checkForRichPush(@NonNull result: Result) {
@@ -505,5 +517,22 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
           EMMA.getInstance().requestNotificationPermission(permissionListener)
       }
       result.success(null)    
+  }
+
+  private fun handleLink(@NonNull call: MethodCall, @NonNull result: Result) {
+    val url = call.argument<String>("url")
+    if (!Utils.isValidField(url)) {
+      EMMALog.e("Param url must be mandatory in handleLink method")
+      result.success(null)
+      return
+    }
+    EMMA.handleLink(applicationContext, Uri.parse(url))
+    result.success(null)
+  }
+
+  override fun onNewIntent(intent: Intent): Boolean {
+    EMMA.getInstance().onNewNotification(intent, true)
+    processIntentIfNeeded(intent)
+    return true
   }
 }

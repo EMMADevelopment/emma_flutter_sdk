@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:emma_flutter_sdk/emma_flutter_sdk.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('emma_flutter_sdk');
@@ -15,9 +14,5 @@ void main() {
 
   tearDown(() {
     channel.setMockMethodCallHandler(null);
-  });
-
-  test('getPlatformVersion', () async {
-    expect(await EmmaFlutterSdk.platformVersion, '42');
   });
 }
