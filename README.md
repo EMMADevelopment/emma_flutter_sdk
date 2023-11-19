@@ -2,9 +2,9 @@
 
 This SDK contains EMMA flutter native bindings
 
-https://www.emma.io
+EMMA Web: https://www.emma.io
 
-For more information about EMMA sdk you can go to https://support.emma.io
+For more information about EMMA sdk you can go to https://developer.emma.io
 
 ## Package
 
