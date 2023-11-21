@@ -111,6 +111,15 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       "handleLink" -> {
         handleLink(call, result)
       }
+      "isUserTrackingEnabled" -> {
+        isUserTrackingEnabled(result)
+      }
+      "enableUserTracking" -> {
+        enableUserTracking(result)
+      }
+      "disableUserTracking" -> {
+        disableUserTracking(call, result)
+      }
       else -> {
         EMMALog.w("Method ${call.method} not implemented")
         Utils.runOnMainThread(Runnable { result.notImplemented() })
@@ -534,5 +543,20 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     EMMA.getInstance().onNewNotification(intent, true)
     processIntentIfNeeded(intent)
     return true
+  }
+
+  private fun isUserTrackingEnabled(@NonNull result: Result) {
+    result.success(EMMA.getInstance().isUserTrackingEnabled)
+  }
+
+  private fun enableUserTracking(@NonNull result: Result) {
+    EMMA.getInstance().enableUserTracking()
+    result.success(null)
+  }
+    
+  private fun disableUserTracking(@NonNull call: MethodCall, @NonNull result: Result) {
+    val deleteUser = call.argument<Boolean>("deleteUser") ?: false
+    EMMA.getInstance().disableUserTracking(deleteUser)
+    result.success(null)
   }
 }

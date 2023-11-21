@@ -183,6 +183,11 @@ class EmmaFlutterSdk {
     return await _channel.invokeMethod('trackOrder');
   }
 
+    /// This method cancel order previously added.
+  Future<void> cancelOrder(String orderId) async {
+    return await _channel.invokeMethod('cancelOrder', orderId);
+  }
+
   /// [iOS only] This method requests the permission to collect the IDFA.
   Future<void> requestTrackingWithIdfa() async {
     return await _channel.invokeMethod('requestTrackingWithIdfa');
@@ -211,5 +216,20 @@ class EmmaFlutterSdk {
   // This method processes EMMA powlinks and send click event.
   Future<void> handleLink(String url) async {
     return await _channel.invokeMethod('handleLink', url);
+  }
+
+  // GDPR
+
+  // Activates/reactivates user tracking (token, user properties)
+  Future<void> enableUserTracking() async {
+    return await _channel.invokeMethod('enableUserTracking');
+  }
+  // Disables user tracking related methods.
+  Future<void> disableUserTracking(bool deleteUser) async {
+    return await _channel.invokeMethod('disableUserTracking', deleteUser);
+  }
+  // Checks if user tracking is enabled or disabled.
+  Future<bool> isUserTrackingEnabled() async {
+    return await _channel.invokeMethod('isUserTrackingEnabled');
   }
 }

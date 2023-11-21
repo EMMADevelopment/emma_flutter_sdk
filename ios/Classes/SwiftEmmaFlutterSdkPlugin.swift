@@ -158,6 +158,15 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         case "handleLink":
             handleLink(call, result)
             break
+        case "isUserTrackingEnabled":
+            isUserTrackingEnabled(result)
+            break
+        case "enableUserTracking":
+            enableUserTracking(call, result)
+            break
+        case "disableUserTracking":
+            disableUserTracking(call, result)
+            break
         default:
             result(FlutterMethodNotImplemented)
             break
@@ -590,6 +599,31 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         DispatchQueue.main.async {
             self.channel.invokeMethod("Emma#onDeepLinkReceived", arguments: url.absoluteString)
         }
+    }
+    
+    //MARK: GDPR
+    public func isUserTrackingEnabled(_ result: @escaping FlutterResult) {
+        result(EMMA.isUserTrackingEnabled())
+    }
+    
+
+    public func enableUserTracking(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        EMMA.enableUserTracking()
+        result(nil)
+    }
+    
+
+    public func disableUserTracking(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+            result(FlutterError.init(code: "BAD_ARGS",
+                                     message: "Can't find args",
+                                     details: nil))
+            return
+        }
+        
+        let deleteUser = args["deleteUser"] as? Bool ?? false
+        EMMA.disableUserTracking(deleteUser: deleteUser)
+        result(nil)
     }
     
     public func application(_ application: UIApplication, open url: URL, sourceApplication: String, annotation: Any) -> Bool {
