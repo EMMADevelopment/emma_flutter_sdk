@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.2
+- Fix changed named trackEvent parameter eventArgument to eventAttributes.
+
 ## 1.3.1
 - Added GDPR methods and fix cancelOrder.
 

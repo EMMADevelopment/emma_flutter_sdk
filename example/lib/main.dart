@@ -100,8 +100,9 @@ class _MyAppState extends State<MyApp> {
                   minimumSize: const Size.fromHeight(40),
                 ),
                 onPressed: () async {
-                  await EmmaFlutterSdk.shared
-                      .trackEvent("2eb78caf404373625020285e92df446b");
+                  await EmmaFlutterSdk.shared.trackEvent(
+                      "2eb78caf404373625020285e92df446b",
+                      eventAttributes: {"attribute1": "value1"});
                 },
                 child: const Text('Send Test Event',
                     style: TextStyle(fontSize: 20)),

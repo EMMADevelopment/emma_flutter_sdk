@@ -91,9 +91,9 @@ class EmmaFlutterSdk {
   /// Send an event to emma identified by [eventToken].
   /// You can also assign some attributtes to this event with [eventArguments]
   Future<void> trackEvent(String eventToken,
-      {Map<String, String>? eventArguments}) async {
+      {Map<String, String>? eventAttributes}) async {
     return await _channel.invokeMethod('trackEvent',
-        {'eventToken': eventToken, 'eventArguments': eventArguments});
+        {'eventToken': eventToken, 'eventAttributes': eventAttributes});
   }
 
   /// You can complete user profile with extra parameters
@@ -183,7 +183,7 @@ class EmmaFlutterSdk {
     return await _channel.invokeMethod('trackOrder');
   }
 
-    /// This method cancel order previously added.
+  /// This method cancel order previously added.
   Future<void> cancelOrder(String orderId) async {
     return await _channel.invokeMethod('cancelOrder', orderId);
   }
@@ -224,10 +224,12 @@ class EmmaFlutterSdk {
   Future<void> enableUserTracking() async {
     return await _channel.invokeMethod('enableUserTracking');
   }
+
   // Disables user tracking related methods.
   Future<void> disableUserTracking(bool deleteUser) async {
     return await _channel.invokeMethod('disableUserTracking', deleteUser);
   }
+
   // Checks if user tracking is enabled or disabled.
   Future<bool> isUserTrackingEnabled() async {
     return await _channel.invokeMethod('isUserTrackingEnabled');
