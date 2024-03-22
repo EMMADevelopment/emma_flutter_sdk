@@ -83,7 +83,7 @@ class EmmaFlutterSdk {
   /// You can use [debugEnabled] to enable logging on your device.
   /// This log is only visible on device consoles
   Future<void> startSession(String sessionKey,
-      {bool debugEnabled = false}) async {
+      {bool debugEnabled = true}) async {
     return await _channel.invokeMethod('startSession',
         {'sessionKey': sessionKey, 'debugEnabled': debugEnabled});
   }
