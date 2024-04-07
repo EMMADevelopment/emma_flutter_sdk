@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.0
+- Added native version SDK 4.13 and iOS SDK Privacy Manifest and signature.
+
 ## 1.3.2
 - Fix changed named trackEvent parameter eventArgument to eventAttributes.
 

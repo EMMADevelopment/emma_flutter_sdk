@@ -395,7 +395,6 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     val orderId = call.argument<String>("orderId")
     val totalPrice = call.argument<Double>("totalPrice")
     val customerId = call.argument<String>("customerId")
-    val currencyCode = call.argument<String>("currencyCode")
     val coupon = call.argument<String>("coupon")
     val extras = call.argument<HashMap<String, String>>("extras")
 
@@ -417,7 +416,7 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       return
     }
 
-    EMMA.getInstance().startOrder(orderId, customerId, totalPrice!!.toFloat(), currencyCode, coupon, extras)
+    EMMA.getInstance().startOrder(orderId, customerId, totalPrice!!.toFloat(), coupon, extras)
     result.success(null)
   }
 

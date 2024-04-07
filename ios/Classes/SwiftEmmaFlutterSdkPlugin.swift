@@ -451,11 +451,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
                                      details: nil))
             return
         }
-        
-        
-        if let currencyCode = args["currencyCode"] as? String {
-            EMMA.setCurrencyCode(currencyCode: currencyCode)
-        }
+    
 
         let coupon = args["coupon"] as? String
         let extras = args["extras"] as? Dictionary<String, String>
