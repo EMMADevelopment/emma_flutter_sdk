@@ -29,6 +29,18 @@ class EmmaSerializer {
                 return .Startview
             case "nativeAd":
                 return .NativeAd
+            case "adBall":
+                return .Adball
+            case "dynamicTab":
+                return .PromoTab
+            case "coupon":
+                return .Coupons
+            case "strip":
+                return .Strip
+            case "banner":
+                return.Banner
+            
+                
             default:
                 return nil
         }
@@ -40,6 +52,14 @@ class EmmaSerializer {
             return EMMACampaignType.campaignStartView
         case InAppType.NativeAd:
             return EMMACampaignType.campaignNativeAd
+        case InAppType.Adball:
+            return EMMACampaignType.campaignAdBall
+        case InAppType.PromoTab:
+            return EMMACampaignType.campaignTabBar
+        case InAppType.Coupons:
+            return EMMACampaignType.campaignCoupon
+        case InAppType.Strip:
+            return EMMACampaignType.campaignStrip
         default:
             return nil
         }

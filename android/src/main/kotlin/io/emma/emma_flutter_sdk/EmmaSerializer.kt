@@ -12,6 +12,8 @@ import org.json.JSONException
 
 object EmmaSerializer {
 
+
+
     fun nativeAdToMap(nativeAd: EMMANativeAd): Map<String, Any>? {
         val nativeAdMap = HashMap<String, Any>()
         try {
@@ -56,6 +58,21 @@ object EmmaSerializer {
             "nativeAd" -> {
                 return EMMACampaign.Type.NATIVEAD
             }
+            "adBall" -> {
+                return EMMACampaign.Type.ADBALL
+            }
+            "dynamicTab" -> {
+                return EMMACampaign.Type.PROMOTAB
+            }
+            "coupon" -> {
+                return EMMACampaign.Type.COUPON
+            }
+            "strip" -> {
+                return EMMACampaign.Type.STRIP
+            }
+            "banner" ->{
+                return EMMACampaign.Type.BANNER
+            }
             else -> {
                 return null
             }
@@ -73,6 +90,21 @@ object EmmaSerializer {
             }
             EMMACampaign.Type.NATIVEAD -> {
                 return CommunicationTypes.NATIVE_AD
+            }
+            EMMACampaign.Type.ADBALL -> {
+                return CommunicationTypes.ADBALL
+            }
+            EMMACampaign.Type.PROMOTAB -> {
+                return CommunicationTypes.TABBAR
+            }
+            EMMACampaign.Type.COUPON -> {
+                return CommunicationTypes.COUPON
+            }
+            EMMACampaign.Type.STRIP -> {
+                return CommunicationTypes.STRIP
+            }
+            EMMACampaign.Type.BANNER -> {
+                return CommunicationTypes.BANNER
             }
             else -> {
                 return null
