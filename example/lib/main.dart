@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:emma_flutter_sdk/src/start_session.dart';
 import 'package:emma_flutter_sdk/emma_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,8 +18,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String platformVersion = 'Unknown';
-  // Add the following line
   String? deeplink;
+
+  final GlobalKey<CustomButtonState> startOrderKey = GlobalKey<CustomButtonState>();
+  final GlobalKey<CustomButtonState> addProductKey = GlobalKey<CustomButtonState>();
+  final GlobalKey<CustomButtonState> trackOrderKey = GlobalKey<CustomButtonState>();
+  final GlobalKey<CustomButtonState> cancelOrderKey = GlobalKey<CustomButtonState>();
+
+  final startSessionParams= StartSession(sessionKey: 'emmaflutter2BMRb2NQ0', isDebug: true);
 
   @override
   void initState() {
@@ -31,7 +38,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> initEMMA() async {
     await EmmaFlutterSdk.shared
-        .startSession('emmaflutter2BMRb2NQ0', debugEnabled: true);
+        .startSession(startSessionParams);
 
     EmmaFlutterSdk.shared
         .setReceivedNativeAdsHandler((List<EmmaNativeAd> nativeAds) {
@@ -101,175 +108,260 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              'WELCOME TO EMMA',
-              style:
-                  TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
-            ),
-            backgroundColor: Color(0xff00a263),
+        appBar: AppBar(
+          title: const Text(
+            'WELCOME TO EMMA',
+            style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
           ),
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              //margin: const EdgeInsets.only(left: 15.0, right: 15.0),
-              children: [
-                Image(image: AssetImage('images/logo-01.png')),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Title(
-                          title: "Deeplink",
-                          log: this.deeplink == null
-                              ? "No deeplink"
-                              : "Deeplink received"),
-                      Text(this.deeplink ??
-                          "Received deeplink will be displayed here."),
-                      Title(title: "Session", log: "Session started"),
-                      Text(
-                          "Session is required. Usually, it should be triggered when the App is ready."),
-                      CustomButton(
-                        text: "Start Session",
-                        onPressed: () {},
-                        isDisabled: true,
-                      ),
-                      Title(title: "Register User", log: ""),
-                      CustomButton(
-                        text: "Register User",
-                        isFirstClick: true,
-                        onPressed: () async {
-                          await EmmaFlutterSdk.shared
-                              .registerUser("flutteruser", "emma@flutter.dev");
-                        },
-                      ),
-                      Title(title: "Log in User", log: ""),
-                      CustomButton(
-                        text: "Log in User",
-                        isFirstClick: true,
-                        onPressed: () async {
-                          await EmmaFlutterSdk.shared
-                              .loginUser("flutteruser", "emma@flutter.dev");
-                        },
-                      ),
-                      Title(title: "Events and Extras", log: ""),
-                      Text("These buttons do not have UI feedback"),
-                      CustomButton(
-                        text: "Track event",
-                        onPressed: () async {
-                          await EmmaFlutterSdk.shared.trackEvent(
-                              "2eb78caf404373625020285e92df446b",
-                              eventAttributes: {"attribute1": "value1"});
-                        },
-                      ),
-                      CustomButton(
-                        text: "Add user tag 'TAG'",
-                        onPressed: () async {
-                          await EmmaFlutterSdk.shared
-                              .trackExtraUserInfo({"TAG": "VALUE"});
-                        },
-                      ),
-                      Title(title: "In-App Comunication", log: ""),
-                      Text("Try our in-app comunications:"),
-                      CustomButton(
-                          text: "Check for StarView",
-                          onPressed: () async {
-                            await EmmaFlutterSdk.shared.inAppMessage(
-                                new EmmaInAppMessageRequest(
-                                    InAppType.startview));
-                          }),
-                      CustomButton(
-                          text: "Check for NativeAd",
-                          onPressed: () async {
-                            var request =
-                                new EmmaInAppMessageRequest(InAppType.nativeAd);
-                            request.batch = true;
-                            request.templateId = "template1";
-                            await EmmaFlutterSdk.shared.inAppMessage(request);
-                          }),
-                      Title(title: "Orders and Products", log: ""),
-                      Text("Track your orders."),
-                      CustomButton(
-                          text: "Track Order",
-                          onPressed: () async {
-                            var order =
-                                new EmmaOrder("EMMA", 100, "flutteruser");
-                            await EmmaFlutterSdk.shared.startOrder(order);
-                            var product = new EmmaProduct('SDK', 'SDK', 1, 100);
-                            await EmmaFlutterSdk.shared.addProduct(product);
-                            await EmmaFlutterSdk.shared.trackOrder();
-                          }),
-                      Platform.isIOS
-                          ? Title(title: "IDFA and iOS", log: "")
-                          : Container(),
-                      Platform.isIOS
-                          ? Text("Request tracking with IDFA for iOS devices")
-                          : Container(),
-                      Platform.isIOS
-                          ? CustomButton(
-                              text: "Request IDFA Tracking",
+          backgroundColor: Color(0xff00a263),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Image(image: AssetImage('images/logo-01.png')),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Title(
+                      title: "Deeplink",
+                      log: this.deeplink == null
+                          ? "No deeplink"
+                          : "Deeplink received",
+                    ),
+                    Text(this.deeplink ??
+                        "Received deeplink will be displayed here."),
+                    Title(title: "Session", log: "Session started"),
+                    Text(
+                        "Session is required. Usually, it should be triggered when the App is ready."),
+                    CustomButton(
+                      text: "Start Session",
+                      onPressed: () {},
+                      isDisabled: true,
+                    ),
+                    Title(title: "Register User", log: ""),
+                    CustomButton(
+                      text: "Register User",
+                      onPressed: () async {
+                        await EmmaFlutterSdk.shared
+                            .registerUser("flutteruser", "emma@flutter.dev");
+                      },
+                    ),
+                    Title(title: "Log in User", log: ""),
+                    CustomButton(
+                      text: "Log in User",
+                      onPressed: () async {
+                        await EmmaFlutterSdk.shared
+                            .loginUser("flutteruser", "emma@flutter.dev");
+                      },
+                    ),
+                    Title(title: "Events and Extras", log: ""),
+                    Text("These buttons do not have UI feedback"),
+                    CustomButton(
+                      text: "Track event",
+                      onPressed: () async {
+                        await EmmaFlutterSdk.shared.trackEvent(
+                            "2eb78caf404373625020285e92df446b",
+                            eventAttributes: {"attribute1": "value1"});
+                      },
+                    ),
+                    CustomButton(
+                      text: "Add user tag 'TAG'",
+                      onPressed: () async {
+                        await EmmaFlutterSdk.shared
+                            .trackExtraUserInfo({"TAG": "VALUE"});
+                      },
+                    ),
+                    Title(title: "In-App Comunication", log: ""),
+                    Text("Try our in-app comunications:"),
+                    Table(
+                      children: [
+                        TableRow(
+                          children: [
+                            CustomButton(
+                              text: "Check for Start View",
                               onPressed: () async {
-                                await EmmaFlutterSdk.shared
-                                    .requestTrackingWithIdfa();
-                              })
-                          : Container(),
-                      Title(title: "Track Location ", log: ""),
-                      Text("Turn on Location Services"),
-                      CustomButton(
-                          text: "Track Location",
-                          onPressed: () async {
-                            await EmmaFlutterSdk.shared.trackUserLocation();
-                          }),
-                      //LEARN MORE
-                      Title(title: "Learn More", log: ""),
-                      Text("Read the docs to discover what to do next:"),
-                      InfoSection(
-                        title: "EMMA SDK",
-                        description: "Documentation & Support",
-                        url: "https://developer.emma.io/es/home",
-                      ),
-                      InfoSection(
-                        title: "iOS",
-                        description: "EMMA SDK for iOS",
-                        url: "https://github.com/EMMADevelopment/eMMa-iOS-SDK",
-                      ),
-                      InfoSection(
-                        title: "Android",
-                        description: "EMMA SDK for Android",
-                        url:
-                            "https://github.com/EMMADevelopment/EMMA-Android-SDK",
-                      ),
-                      InfoSection(
-                        title: "Cordova",
-                        description: "EMMA SDK for Cordova",
-                        url:
-                            "https://github.com/EMMADevelopment/Cordova-Plugin-EMMA-SDK",
-                      ),
-                      InfoSection(
-                        title: "Ionic",
-                        description: "EMMA SDK for Ionic",
-                        url:
-                            "https://github.com/EMMADevelopment/EMMAIonicExample",
-                      ),
-                      InfoSection(
-                        title: "Flutter",
-                        description: "EMMA SDK for Flutter",
-                        url:
-                            "https://github.com/EMMADevelopment/emma_flutter_sdk",
-                      ),
-                      InfoSection(
-                        title: "Xamarin",
-                        description: "EMMA SDK for Xamarin",
-                        url:
-                            "https://github.com/EMMADevelopment/EMMA-Xamarin-SDK",
-                      ),
-                    ],
-                  ),
+                                await EmmaFlutterSdk.shared.inAppMessage(
+                                    new EmmaInAppMessageRequest(
+                                        InAppType.startview));
+                              },
+                            ),
+                            CustomButton(
+                              text: "Check for NativeAd",
+                              onPressed: () async {
+                                var request =
+                                    new EmmaInAppMessageRequest(InAppType.nativeAd);
+                                request.batch = true;
+                                request.templateId = "template1";
+                                await EmmaFlutterSdk.shared.inAppMessage(request);
+                              },
+                            ),
+                          ],
+                        ),
+                        TableRow(
+                          children: [
+                            CustomButton(
+                              text: "Check for Adball",
+                              onPressed: () async {
+                                var request =
+                                    new EmmaInAppMessageRequest(InAppType.adBall);
+                                request.batch = true;
+                                request.templateId = "template1";
+                                await EmmaFlutterSdk.shared.inAppMessage(request);
+                              },
+                            ),
+                            CustomButton(
+                              text: "Check for Dynamic Tab",
+                              onPressed: () async {
+                                var request =
+                                    new EmmaInAppMessageRequest(InAppType.dynamicTab);
+                                request.batch = true;
+                                request.templateId = "template1";
+                                await EmmaFlutterSdk.shared.inAppMessage(request);
+                              },
+                            ),
+                          ],
+                        ),
+                        TableRow(
+                          children: [
+                            CustomButton(
+                              text: "Check for Coupon",
+                              onPressed: () async {
+                                var request =
+                                    new EmmaInAppMessageRequest(InAppType.coupon);
+                                request.batch = true;
+                                request.templateId = "template1";
+                                await EmmaFlutterSdk.shared.inAppMessage(request);
+                              },
+                            ),
+                            CustomButton(
+                              text: "Check for Strip",
+                              onPressed: () async {
+                                var request =
+                                    new EmmaInAppMessageRequest(InAppType.strip);
+                                request.batch = true;
+                                request.templateId = "template1";
+                                await EmmaFlutterSdk.shared.inAppMessage(request);
+                              },
+                            ),
+                          ],
+                        ),
+      
+                      ],
+                      
+                    ),
+
+                    Platform.isAndroid ?
+                    CustomButton(text: "Check for Banner", onPressed: () async {
+                              var request =
+                                    new EmmaInAppMessageRequest(InAppType.banner);
+                                request.batch = true;
+                                request.templateId = "template1";
+                                await EmmaFlutterSdk.shared.inAppMessage(request);
+                            }) : Container(),
+                    Title(title: "Orders and Products", log: ""),
+                    Text("Track your orders."),
+                    Table(
+                      children: [
+                        TableRow(
+                          children: [
+                            CustomButton(
+                              key: startOrderKey,
+                              text: "Start Order",
+                              isDisabled: false,
+                              onPressed: () async {
+                                var order =
+                                    new EmmaOrder("EMMA", 100, "flutteruser");
+                                await EmmaFlutterSdk.shared.startOrder(order);
+                                setState(() {
+                                  startOrderKey.currentState?.setEnabled(false);
+                                  addProductKey.currentState?.setEnabled(true);
+                                  trackOrderKey.currentState?.setEnabled(true);
+                                  cancelOrderKey.currentState?.setEnabled(false);
+                                });
+                              },
+                            ),
+                            CustomButton(
+                              key: addProductKey,
+                              text: "Add Product",
+                              isDisabled: true,
+                              onPressed: () async {
+                                var product =
+                                    new EmmaProduct('SDK', 'SDK', 1, 100);
+                                await EmmaFlutterSdk.shared.addProduct(product);
+                                setState(() {
+                                  startOrderKey.currentState?.setEnabled(false);
+                                  addProductKey.currentState?.setEnabled(false);
+                                  trackOrderKey.currentState?.setEnabled(true);
+                                  cancelOrderKey.currentState?.setEnabled(false);
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        TableRow(
+                          children: [
+                            CustomButton(
+                              key: trackOrderKey,
+                              text: "Track Order",
+                              isDisabled: true,
+                              onPressed: () async {
+                                await EmmaFlutterSdk.shared.trackOrder();
+                                setState(() {
+                                  trackOrderKey.currentState?.setEnabled(false);
+                                  cancelOrderKey.currentState?.setEnabled(true);
+                                });
+                              },
+                            ),
+                            CustomButton(
+                              key: cancelOrderKey,
+                              text: "Cancel Order",
+                              isDisabled: true,
+                              onPressed: () async {
+                                //EmmaFlutterSdk.shared.cancelOrder()
+                                setState(() {
+                                  startOrderKey.currentState?.setEnabled(true);
+                                  addProductKey.currentState?.setEnabled(false);
+                                  trackOrderKey.currentState?.setEnabled(false);
+                                  cancelOrderKey.currentState?.setEnabled(false);
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Platform.isIOS ? 
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Title(title: "IDFA and iOS", log: ""),
+                        Text("Request tracking with IDFA for iOS devices"),
+                        CustomButton(
+                            text: "Request IDFA Tracking",
+                            onPressed: () async {
+                              await EmmaFlutterSdk.shared
+                                  .requestTrackingWithIdfa();
+                            },
+                          )
+                      ],
+                    ) : Container(),
+                    Title(title: "Track Location ", log: ""),
+                    CustomButton(
+                      text: "Track Location",
+                      onPressed: () async {
+                        await EmmaFlutterSdk.shared.trackUserLocation();
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          )),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -330,15 +422,13 @@ class InfoSection extends StatelessWidget {
 class CustomButton extends StatefulWidget {
   final String text;
   final VoidCallback onPressed;
-  final bool isDisabled;
-  final bool isFirstClick;
+  final bool? isDisabled;
 
   const CustomButton({
     Key? key,
     required this.text,
     required this.onPressed,
-    this.isDisabled = false,
-    this.isFirstClick = false,
+    this.isDisabled,
   }) : super(key: key);
 
   @override
@@ -351,37 +441,32 @@ class CustomButtonState extends State<CustomButton> {
   @override
   void initState() {
     super.initState();
-    if (widget.isDisabled) {
-      isButtonEnabled = false;
-    }
+    isButtonEnabled = !(widget.isDisabled ?? false);
+  }
+
+  void setEnabled(bool enabled) {
+    setState(() {
+      isButtonEnabled = enabled;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 5),
+      margin: EdgeInsets.all(5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ElevatedButton(
-            onPressed: isButtonEnabled
-                ? () {
-                    setState(() {
-                      !widget.isFirstClick ? () {} : isButtonEnabled = false;
-                    });
-                    widget.onPressed();
-                  }
-                : null,
+            onPressed: isButtonEnabled ? widget.onPressed : null,
             child: Text(
               widget.text.toUpperCase(),
-              style:
-                  TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
+              style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white,),
+              textAlign: TextAlign.center,
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  isButtonEnabled ? Color(0xff00a263) : Colors.green[200],
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(0)),
+              backgroundColor: isButtonEnabled ? Color(0xff00a263) : Colors.grey,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
             ),
           ),
         ],
@@ -418,7 +503,7 @@ class Title extends StatelessWidget {
   }
 }
 
-//Utils
+// Utils
 _launchURL(stringUrl) async {
   final Uri url = Uri.parse(stringUrl);
   if (!await launchUrl(url)) {
