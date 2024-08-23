@@ -2,6 +2,13 @@ import Flutter
 import UIKit
 import EMMA_iOS
 
+enum InAppAction {
+    case click
+    case impression
+    case dismissedClick
+}
+
+
 extension FlutterAppDelegate : EMMAPushDelegate {
     public func onPushOpen(_ push: EMMAPush) {
         let _ = push.params
@@ -126,10 +133,13 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
             result(nil)
             break
         case "sendInAppImpression":
-            sendInAppImpressionOrClick(isInAppImpression:true , call, result)
+            sendInAppImpressionOrClick(action: .impression , call, result)
             break
         case "sendInAppClick":
-            sendInAppImpressionOrClick(isInAppImpression:false , call, result)
+            sendInAppImpressionOrClick(action: .click , call, result)
+            break
+        case "sendInAppDismissedClick":
+            sendInAppImpressionOrClick(action: .dismissedClick , call, result)
             break
         case "openNativeAd":
             openNativeAd(call, result)
@@ -358,7 +368,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         return true
     }
     
-    func sendInAppImpressionOrClick(isInAppImpression: Bool, _ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+    func sendInAppImpressionOrClick(action: InAppAction, _ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let args = call.arguments as? Dictionary<String, AnyObject> else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
@@ -395,10 +405,12 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
             return
         }
         
-        if (isInAppImpression) {
+        if (action == .impression) {
             EMMA.sendImpression(campaignType: communicationType, withId: String(campaignId))
-        } else {
+        } else if (action == .click) {
             EMMA.sendClick(campaignType: communicationType, withId: String(campaignId))
+        } else {
+            EMMA.sendDismissedClick(campaignType: communicationType, withId: String(campaignId))
         }
 
        result(nil)

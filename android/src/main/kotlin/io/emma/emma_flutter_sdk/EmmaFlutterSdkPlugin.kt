@@ -78,6 +78,9 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       "sendInAppClick" -> {
         sendInAppImpressionOrClick(InAppAction.Click, call, result)
       }
+      "sendInAppDismissedClick" -> {
+        sendInAppImpressionOrClick(InAppAction.DismissedClick, call, result)
+      }
       "openNativeAd" -> {
         openNativeAd(call, result)
       }
@@ -172,7 +175,7 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
 
     val configuration = EMMA.Configuration.Builder(applicationContext)
             .setSessionKey(sessionKey)
-            .setQueueTime(25)
+            .setQueueTime(10)
             .setDebugActive(debugEnabled)
             .build()
 
@@ -354,8 +357,10 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
 
     if (action == InAppAction.Impression) {
       EMMA.getInstance().sendInAppImpression(communicationType, campaign)
-    } else {
+    } else if (action == InAppAction.Click) {
       EMMA.getInstance().sendInAppClick(communicationType, campaign)
+    } else {
+      EMMA.getInstance().sendInAppDismissedClick(communicationType, campaign)
     }
 
     result.success(null)

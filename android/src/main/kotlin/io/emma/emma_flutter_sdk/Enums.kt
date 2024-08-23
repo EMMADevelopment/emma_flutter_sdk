@@ -9,5 +9,6 @@ enum class PermissionStatus {
 
 enum class InAppAction {
     Click,
-    Impression
+    Impression,
+    DismissedClick
 }

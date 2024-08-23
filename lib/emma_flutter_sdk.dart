@@ -155,6 +155,16 @@ class EmmaFlutterSdk {
         'sendInAppClick', {"type": type, "campaignId": campaignId});
   }
 
+  /// Sends dismissed click associated with inapp campaign. This method is mainly used to send native ad clicks.
+  /// Formats startview, banner, adball send click automatically
+  /// [campaignId] The campaign identifier
+  Future<void> sendInAppDismissedClick(
+      InAppType inAppType, int campaignId) async {
+    String type = inAppType.toString().split(".")[1];
+    return await _channel.invokeMethod(
+        'sendInAppDismissedClick', {"type": type, "campaignId": campaignId});
+  }
+
   /// Opens native ad CTA inapp or outapp. This method track native ad click automatically. It is not necessary call to sendInAppClick method.
   /// [nativeAd] The native ad
   Future<void> openNativeAd(EmmaNativeAd nativeAd) async {

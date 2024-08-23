@@ -1,5 +1,5 @@
 group 'io.emma.emma_flutter_sdk'
-version '1.4.0'
+version '1.5.0'
 
 buildscript {
     ext.kotlin_version = '1.6.0'
@@ -10,7 +10,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:8.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -33,8 +33,11 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 21
     }
+
+    namespace 'io.emma.emma_flutter_sdk'
+
     lintOptions {
         disable 'InvalidPackage'
     }
@@ -42,5 +45,5 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'io.emma:eMMaSDK:4.13.+'
+    implementation 'io.emma:eMMaSDK:4.14.+'
 }

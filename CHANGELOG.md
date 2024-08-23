@@ -1,4 +1,8 @@
 # Changelog
+## 1.5.0
+- Added native version SDK 4.14
+- Added inapp dismissed click.
+- Updated AGP to v8
 
 ## 1.4.0
 - Added native version SDK 4.13 and iOS SDK Privacy Manifest and signature.
