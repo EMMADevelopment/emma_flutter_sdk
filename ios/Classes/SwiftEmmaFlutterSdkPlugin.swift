@@ -198,16 +198,18 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
             return
         }
         
-        guard let debugEnabled = args["debugEnabled"] as? Bool else {
-            result(FlutterError.init(code: "BAD_ARGS",
-                                     message: "Debug Enabled is not boolean",
-                                     details: nil))
-            return
-        }
-        
         let configuration = EMMAConfiguration()
-        configuration.debugEnabled = debugEnabled
+        
         configuration.sessionKey = sessionKey
+        configuration.debugEnabled = args["isDebug"] as? Bool ?? false
+        configuration.queueTime = Int32(args["queueTime"] as? Int ?? 0)
+        configuration.urlBase = args["apiUrl"] as? String
+        configuration.customPowlinkDomains = args["customPowlinkDomains"] as? [String]
+        configuration.shortPowlinkDomains = args["customShortPowlinkDomains"] as? [String]
+        configuration.trackScreenEvents = args["trackScreenEvents"] as? Bool ?? false
+        configuration.skanAttribution = args["skanAttribution"] as? Bool ?? false
+        configuration.skanCustomManagementAttribution = args["skanCustomManagementAttribution"] as? Bool ?? false
+        
         EMMA.startSession(with: configuration)
         
         result(nil)

@@ -170,17 +170,40 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
   private fun startSession(@NonNull call: MethodCall, @NonNull result: Result) {
     val sessionKey = call.argument<String>("sessionKey")
             ?: return returnError(result, call.method, "sessionKey")
-    val debugEnabled = call.argument<Boolean>("debugEnabled")
-            ?: return returnError(result, call.method, "debugEnabled")
+    val debugEnabled = call.argument<Boolean>("isDebug") ?: false
+    val queueTime = call.argument<Int>("queueTime")
+    val apiUrl = call.argument<String>("apiUrl")
+    val customPowlinkDomains = call.argument<List<String>>("customPowlinkDomains")?.toTypedArray()
+    val customShortPowlinkDomains = call.argument<List<String>>("customShortPowlinkDomains")?.toTypedArray()
+    val trackScreenEvents = call.argument<Boolean>("trackScreenEvents") ?: false
+    val familiesPolicyTreatment = call.argument<Boolean>("familiesPolicyTreatment") ?: false
 
-    val configuration = EMMA.Configuration.Builder(applicationContext)
-            .setSessionKey(sessionKey)
-            .setQueueTime(10)
-            .setDebugActive(debugEnabled)
-            .build()
+    val configurationBuilder = EMMA.Configuration.Builder(applicationContext)
+      .setSessionKey(sessionKey)
+      .setDebugActive(debugEnabled)
+      .trackScreenEvents(trackScreenEvents)
+      .setFamilyPolicyTreatment(familiesPolicyTreatment)
+
+    queueTime?.takeIf { it > 0 }?.let {
+      configurationBuilder.setQueueTime(it)
+    }
+
+    apiUrl?.let {
+      configurationBuilder.setWebServiceUrl(it)
+    }
+
+    customPowlinkDomains?.let {
+      configurationBuilder.setPowlinkDomains(*it)
+    }
+
+    customShortPowlinkDomains?.let {
+      configurationBuilder.setShortPowlinkDomains(*it)
+    }
+
+    val configuration = configurationBuilder.build()
 
     EMMA.getInstance().startSession(configuration)
-    result.success(null);
+    result.success(null)
   }
 
   private fun trackEvent(@NonNull call: MethodCall, @NonNull result: Result) {

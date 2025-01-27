@@ -41,9 +41,9 @@ On Android you must include notification icon as a drawable.
 - [x] Native Ads
 - [ ] InApp Messages
   - [x] Start View
-  - [ ] Banner
-  - [ ] AdBall
+  - [x] Banner (currently only on Android)
+  - [x] AdBall
   - [ ] Dynamic Tab
   - [ ] Coupon
-  - [ ] Strip
+  - [x] Strip
   

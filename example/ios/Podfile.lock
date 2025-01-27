@@ -1,7 +1,7 @@
 PODS:
-  - eMMa (4.14.0)
-  - emma_flutter_sdk (1.5.0):
-    - eMMa (~> 4.14.0)
+  - eMMa (4.15.1)
+  - emma_flutter_sdk (1.6.0):
+    - eMMa (~> 4.15.1)
     - Flutter
   - Flutter (1.0.0)
   - url_launcher_ios (0.0.1):
@@ -25,11 +25,11 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  eMMa: 18b3a6bca8c87619cc8f6b6c8560c886b129357d
-  emma_flutter_sdk: 23c8a3d9c0562153bb81a984daf845b6fd7319da
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  eMMa: ae2c451243fae7ab8c9ecc72b078301737d465b1
+  emma_flutter_sdk: bfa901838310153d6c0be421202970d5e26c2170
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   url_launcher_ios: bbd758c6e7f9fd7b5b1d4cde34d2b95fcce5e812
 
 PODFILE CHECKSUM: 4e8f8b2be68aeea4c0d5beb6ff1e79fface1d048
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

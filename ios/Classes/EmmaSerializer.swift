@@ -29,6 +29,12 @@ class EmmaSerializer {
                 return .Startview
             case "nativeAd":
                 return .NativeAd
+            case "adBall":
+                return .Adball
+            case "strip":
+                return .Strip
+            case "banner":
+                return.Banner
             default:
                 return nil
         }
@@ -40,6 +46,10 @@ class EmmaSerializer {
             return EMMACampaignType.campaignStartView
         case InAppType.NativeAd:
             return EMMACampaignType.campaignNativeAd
+        case InAppType.Adball:
+            return EMMACampaignType.campaignAdBall
+        case InAppType.Strip:
+            return EMMACampaignType.campaignStrip
         default:
             return nil
         }
