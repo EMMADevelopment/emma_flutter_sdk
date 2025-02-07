@@ -32,7 +32,8 @@ class _MyAppState extends State<MyApp> {
 
   final startSessionParams = StartSession(
     sessionKey: 'emmamobileM6wQcLX8S',
-    isDebug: false,
+    queueTime: 5,
+    isDebug: true,
     customShortPowlinkDomains: ["emma.shortLink.mycompany.com"],
     customPowlinkDomains: ["emma.link.mycompany.com"],
     trackScreenEvents: true,
@@ -299,7 +300,7 @@ class _MyAppState extends State<MyApp> {
                               text: "Cancel Order",
                               isDisabled: true,
                               onPressed: () async {
-                                //EmmaFlutterSdk.shared.cancelOrder()
+                                EmmaFlutterSdk.shared.cancelOrder("EMMA");
                                 setState(() {
                                   startOrderKey.currentState?.setEnabled(true);
                                   addProductKey.currentState?.setEnabled(false);

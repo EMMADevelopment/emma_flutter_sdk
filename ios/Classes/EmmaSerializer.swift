@@ -14,7 +14,7 @@ class EmmaSerializer {
         return [
             "id": nativeAd.idPromo,
             "templateId": nativeAd.nativeAdTemplateId ?? "",
-            "cta": nativeAd.getField("CTA") ?? "",
+            "cta": nativeAd.nativeAdContent["CTA"] ?? "",
             "times": nativeAd.times,
             "tag": nativeAd.tag ?? "",
             "params": nativeAd.params ?? [:],
@@ -33,8 +33,6 @@ class EmmaSerializer {
                 return .Adball
             case "strip":
                 return .Strip
-            case "banner":
-                return.Banner
             default:
                 return nil
         }

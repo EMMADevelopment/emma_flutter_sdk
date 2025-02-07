@@ -84,7 +84,6 @@ class EmmaFlutterSdk {
   /// You can use [debugEnabled] to enable logging on your device.
   /// This log is only visible on device consoles
   Future<void> startSession(StartSession params) async {
-    print(params.toMap());
     return await _channel.invokeMethod('startSession', params.toMap());
   }
 
