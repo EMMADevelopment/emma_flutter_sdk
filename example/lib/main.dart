@@ -31,12 +31,12 @@ class _MyAppState extends State<MyApp> {
       GlobalKey<CustomButtonState>();
 
   final startSessionParams = StartSession(
-    sessionKey: 'emmamobileM6wQcLX8S',
-    queueTime: 5,
+    sessionKey: 'emmaflutter2BMRb2NQ0',
+    queueTime: 10,
     isDebug: true,
     customShortPowlinkDomains: ["emma.shortLink.mycompany.com"],
     customPowlinkDomains: ["emma.link.mycompany.com"],
-    trackScreenEvents: true,
+    trackScreenEvents: false,
     familiesPolicyTreatment: (Platform.isAndroid) ? true : false,
   );
 
