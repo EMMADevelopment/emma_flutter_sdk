@@ -5,6 +5,7 @@ import 'package:emma_flutter_sdk/src/inapp_message_request.dart';
 import 'package:emma_flutter_sdk/src/native_ad.dart';
 import 'package:emma_flutter_sdk/src/order.dart';
 import 'package:emma_flutter_sdk/src/product.dart';
+import 'package:emma_flutter_sdk/src/start_session.dart';
 import 'package:flutter/services.dart';
 
 export 'src/defines.dart';
@@ -82,10 +83,8 @@ class EmmaFlutterSdk {
   ///
   /// You can use [debugEnabled] to enable logging on your device.
   /// This log is only visible on device consoles
-  Future<void> startSession(String sessionKey,
-      {bool debugEnabled = true}) async {
-    return await _channel.invokeMethod('startSession',
-        {'sessionKey': sessionKey, 'debugEnabled': debugEnabled});
+  Future<void> startSession(StartSession params) async {
+    return await _channel.invokeMethod('startSession', params.toMap());
   }
 
   /// Send an event to emma identified by [eventToken].

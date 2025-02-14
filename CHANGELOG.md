@@ -1,4 +1,10 @@
 # Changelog
+## 1.6.0
+- Updated startSession method to include configuration options.
+- Added AdBall InApp Message.
+- Added Strip InApp Message.
+- Added Banner InApp Message (currently only on Android).
+
 ## 1.5.0
 - Added native version SDK 4.14
 - Added inapp dismissed click.

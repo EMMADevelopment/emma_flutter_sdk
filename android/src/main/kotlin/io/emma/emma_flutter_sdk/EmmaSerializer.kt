@@ -56,6 +56,15 @@ object EmmaSerializer {
             "nativeAd" -> {
                 return EMMACampaign.Type.NATIVEAD
             }
+            "adBall" -> {
+                return EMMACampaign.Type.ADBALL
+            }
+            "strip" -> {
+                return EMMACampaign.Type.STRIP
+            }
+            "banner" ->{
+                return EMMACampaign.Type.BANNER
+            }
             else -> {
                 return null
             }
@@ -73,6 +82,15 @@ object EmmaSerializer {
             }
             EMMACampaign.Type.NATIVEAD -> {
                 return CommunicationTypes.NATIVE_AD
+            }
+            EMMACampaign.Type.ADBALL -> {
+                return CommunicationTypes.ADBALL
+            }
+            EMMACampaign.Type.STRIP -> {
+                return CommunicationTypes.STRIP
+            }
+            EMMACampaign.Type.BANNER -> {
+                return CommunicationTypes.BANNER
             }
             else -> {
                 return null
