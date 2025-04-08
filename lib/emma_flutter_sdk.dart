@@ -194,7 +194,9 @@ class EmmaFlutterSdk {
 
   /// This method cancel order previously added.
   Future<void> cancelOrder(String orderId) async {
-    return await _channel.invokeMethod('cancelOrder', orderId);
+    return await _channel.invokeMethod('cancelOrder', {
+      'orderId': orderId,
+    });
   }
 
   /// [iOS only] This method requests the permission to collect the IDFA.
@@ -209,7 +211,16 @@ class EmmaFlutterSdk {
 
   /// This method sends the customerId without using an event.
   Future<void> setCustomerId(String customerId) async {
-    return await _channel.invokeMethod('setCustomerId', customerId);
+    return await _channel.invokeMethod('setCustomerId', {
+      'customerId': customerId,
+    });
+  }
+
+  /// This method allows to manually set the language instead of relying on auto-detection.
+  Future<void> setUserLanguage(String language) async {
+    return await _channel.invokeMethod('setUserLanguage', {
+      'language': language,
+    });
   }
 
   /// [Android only] This method returns if devices can receive notifications or not.
@@ -224,7 +235,9 @@ class EmmaFlutterSdk {
 
   // This method processes EMMA powlinks and send click event.
   Future<void> handleLink(String url) async {
-    return await _channel.invokeMethod('handleLink', url);
+    return await _channel.invokeMethod('handleLink', {
+      'url': url,
+    });
   }
 
   // GDPR
@@ -236,7 +249,9 @@ class EmmaFlutterSdk {
 
   // Disables user tracking related methods.
   Future<void> disableUserTracking(bool deleteUser) async {
-    return await _channel.invokeMethod('disableUserTracking', deleteUser);
+    return await _channel.invokeMethod('disableUserTracking', {
+      'deleteUser': deleteUser,
+    });
   }
 
   // Checks if user tracking is enabled or disabled.

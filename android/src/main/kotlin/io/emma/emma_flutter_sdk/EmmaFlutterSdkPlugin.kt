@@ -105,6 +105,9 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       "setCustomerId" -> {
         setCustomerId(call, result)
       }
+      "setUserLanguage" -> {
+        setUserLanguage(call, result)
+      }
       "areNotificationsEnabled" -> {
         areNotificationsEnabled(result)
       }
@@ -519,6 +522,17 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       return
     }
     EMMA.getInstance().setCustomerId(customerId);
+    result.success(null)
+  }
+
+  private fun setUserLanguage(@NonNull call: MethodCall, @NonNull result: Result) {
+    val language = call.argument<String>("language")
+    if (!Utils.isValidField(language)) {
+      EMMALog.e("Param language must be mandatory in setUserLanguage method")
+      result.success(null)
+      return
+    }
+    EMMA.getInstance().setUserLanguage(language);
     result.success(null)
   }
   

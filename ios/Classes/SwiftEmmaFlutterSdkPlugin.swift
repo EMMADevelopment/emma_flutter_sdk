@@ -165,6 +165,9 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         case "setCustomerId":
             setCustomerId(call, result)
             break
+        case "setUserLanguage":
+            setUserLanguage(call, result)
+            break
         case "handleLink":
             handleLink(call, result)
             break
@@ -575,6 +578,25 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         }
         
         EMMA.setCustomerId(customerId: customerId)
+        result(nil)
+    }
+
+    func setUserLanguage(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+            result(FlutterError.init(code: "BAD_ARGS",
+                                     message: "Can't find args",
+                                     details: nil))
+            return
+        }
+        
+        guard let language = args["language"] as? String else {
+            result(FlutterError.init(code: "BAD_LANGUAGE",
+                                     message: "Unknown language",
+                                     details: nil))
+            return
+        }
+
+        EMMA.setUserLanguage(language);
         result(nil)
     }
 

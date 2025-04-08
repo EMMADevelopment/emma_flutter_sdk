@@ -20,6 +20,7 @@ class _MyAppState extends State<MyApp> {
   String platformVersion = 'Unknown';
   // Add the following line
   String? deeplink;
+  String dropdownSelectedLanguage = "Español";
 
   final GlobalKey<CustomButtonState> startOrderKey =
       GlobalKey<CustomButtonState>();
@@ -331,18 +332,127 @@ class _MyAppState extends State<MyApp> {
                             )
                           : Container(),
                       Title(title: "Track Location ", log: ""),
+                      Text("Turn on Location Services"),
                       CustomButton(
                         text: "Track Location",
                         onPressed: () async {
                           await EmmaFlutterSdk.shared.trackUserLocation();
                         },
                       ),
+                      Title(title: "Language ", log: ""),
+                      Text(
+                          "Change the language to receive notifications, communications and more in this language."),
+                      CustomDropdown(
+                        initialValue: dropdownSelectedLanguage,
+                        onChanged: (value) {
+                          setState(() {
+                            dropdownSelectedLanguage = value;
+                          });
+                        },
+                      ),
+                      CustomButton(
+                        text: "Set language",
+                        onPressed: () async {
+                          final Map<String, String> languageMap = {
+                            'Español': 'es',
+                            'Inglés': 'en',
+                            'Francés': 'fr',
+                            'Alemán': 'de',
+                          };
+                          String language =
+                              languageMap[dropdownSelectedLanguage] ?? 'es';
+                          await EmmaFlutterSdk.shared.setUserLanguage(language);
+                        },
+                      ),
+                      //LEARN MORE
+                      Title(title: "Learn More", log: ""),
+                      Text("Read the docs to discover what to do next:"),
+                      InfoSection(
+                        title: "EMMA SDK",
+                        description: "Documentation & Support",
+                        url: "https://developer.emma.io/es/home",
+                      ),
+                      InfoSection(
+                        title: "iOS",
+                        description: "EMMA SDK for iOS",
+                        url: "https://github.com/EMMADevelopment/eMMa-iOS-SDK",
+                      ),
+                      InfoSection(
+                        title: "Android",
+                        description: "EMMA SDK for Android",
+                        url:
+                            "https://github.com/EMMADevelopment/EMMA-Android-SDK",
+                      ),
+                      InfoSection(
+                        title: "Cordova",
+                        description: "EMMA SDK for Cordova",
+                        url:
+                            "https://github.com/EMMADevelopment/Cordova-Plugin-EMMA-SDK",
+                      ),
+                      InfoSection(
+                        title: "Ionic",
+                        description: "EMMA SDK for Ionic",
+                        url:
+                            "https://github.com/EMMADevelopment/EMMAIonicExample",
+                      ),
+                      InfoSection(
+                        title: "Flutter",
+                        description: "EMMA SDK for Flutter",
+                        url:
+                            "https://github.com/EMMADevelopment/emma_flutter_sdk",
+                      ),
+                      InfoSection(
+                        title: "Xamarin",
+                        description: "EMMA SDK for Xamarin",
+                        url:
+                            "https://github.com/EMMADevelopment/EMMA-Xamarin-SDK",
+                      )
                     ],
                   ),
                 ),
               ],
             ),
           )),
+    );
+  }
+}
+
+class CustomDropdown extends StatelessWidget {
+  final String initialValue;
+  final Function(String) onChanged;
+
+  CustomDropdown({required this.initialValue, required this.onChanged});
+
+  final List<String> options = ['Español', 'Inglés', 'Francés', 'Alemán'];
+
+  @override
+  Widget build(BuildContext context) {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        String selected = initialValue;
+
+        return SizedBox(
+          width: double.infinity,
+          child: DropdownButton<String>(
+            value: selected,
+            isExpanded: true,
+            items: options.map((option) {
+              return DropdownMenuItem(
+                value: option,
+                child: Text(option),
+              );
+            }).toList(),
+            onChanged: (value) {
+              if (value != null) {
+                setState(() {
+                  selected = value;
+                });
+                onChanged(value);
+              }
+            },
+          ),
+        );
+      },
     );
   }
 }
