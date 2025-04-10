@@ -20,7 +20,7 @@ class _MyAppState extends State<MyApp> {
   String platformVersion = 'Unknown';
   // Add the following line
   String? deeplink;
-  String dropdownSelectedLanguage = "Español";
+  String dropdownSelectedLanguage = "Spanish";
 
   final GlobalKey<CustomButtonState> startOrderKey =
       GlobalKey<CustomButtonState>();
@@ -354,10 +354,10 @@ class _MyAppState extends State<MyApp> {
                         text: "Set language",
                         onPressed: () async {
                           final Map<String, String> languageMap = {
-                            'Español': 'es',
-                            'Inglés': 'en',
-                            'Francés': 'fr',
-                            'Alemán': 'de',
+                            'Spanish': 'es',
+                            'English': 'en',
+                            'French': 'fr',
+                            'German': 'de',
                           };
                           String language =
                               languageMap[dropdownSelectedLanguage] ?? 'es';
@@ -423,7 +423,7 @@ class CustomDropdown extends StatelessWidget {
 
   CustomDropdown({required this.initialValue, required this.onChanged});
 
-  final List<String> options = ['Español', 'Inglés', 'Francés', 'Alemán'];
+  final List<String> options = ['Spanish', 'English', 'French', 'German'];
 
   @override
   Widget build(BuildContext context) {
