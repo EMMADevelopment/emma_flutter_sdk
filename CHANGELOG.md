@@ -1,4 +1,8 @@
 # Changelog
+## 1.6.1
+- Update native sdk dependencies: added new setUserLanguage method that allows users to manually set the language instead of relying on auto-detection.
+- Fix cancelOrder, setCustomerId, handleLink and disableUserTracking.
+
 ## 1.6.0
 - Updated startSession method to include configuration options.
 - Added AdBall InApp Message.

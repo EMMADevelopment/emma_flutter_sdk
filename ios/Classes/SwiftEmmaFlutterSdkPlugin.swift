@@ -109,77 +109,55 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         switch call.method {
         case "getEMMAVersion":
             result(EMMA.getSDKVersion())
-            break
         case "startSession":
             startSession(call, result)
-            break
         case "trackEvent":
             trackEvent(call, result)
-            break
         case "trackExtraUserInfo":
             trackExtraUserInfo(call, result)
-            break
         case "loginUser":
             loginUser(call, result)
-            break
         case "registerUser":
             registerUser(call, result)
-            break
         case "inAppMessage":
             inappMessage(call, result)
-            break
         case "startPushSystem":
             setPushDelegates()
             result(nil)
-            break
         case "sendInAppImpression":
             sendInAppImpressionOrClick(action: .impression , call, result)
-            break
         case "sendInAppClick":
             sendInAppImpressionOrClick(action: .click , call, result)
-            break
         case "sendInAppDismissedClick":
             sendInAppImpressionOrClick(action: .dismissedClick , call, result)
-            break
         case "openNativeAd":
             openNativeAd(call, result)
-            break
         case "startOrder":
             startOrder(call, result)
-            break
         case "addProduct":
             addProduct(call, result)
-            break
         case "trackOrder":
             trackOrder(call, result)
-            break
         case "cancelOrder":
             cancelOrder(call, result)
-            break
         case "requestTrackingWithIdfa":
             requestTrackingWithIdfa(call, result)
-            break
         case "trackUserLocation":
             trackLocation(call, result);
-            break
         case "setCustomerId":
             setCustomerId(call, result)
-            break
+        case "setUserLanguage":
+            setUserLanguage(call, result)
         case "handleLink":
             handleLink(call, result)
-            break
         case "isUserTrackingEnabled":
             isUserTrackingEnabled(result)
-            break
         case "enableUserTracking":
             enableUserTracking(call, result)
-            break
         case "disableUserTracking":
             disableUserTracking(call, result)
-            break
         default:
             result(FlutterMethodNotImplemented)
-            break
         }
     }
     
@@ -216,7 +194,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
     }
     
     func trackEvent(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+        guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
                                      details: nil))
@@ -231,7 +209,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         }
         
         let eventRequest = EMMAEventRequest(token: eventToken)
-        if let eventAttributes = args["eventAttributes"] as? Dictionary<String, AnyObject>  {
+        if let eventAttributes = args["eventAttributes"] as? [String: AnyObject]  {
             eventRequest.attributes = eventAttributes
         }
         EMMA.trackEvent(request: eventRequest)
@@ -239,7 +217,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
     }
     
     func trackExtraUserInfo(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+        guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
                                      details: nil))
@@ -256,7 +234,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
     }
     
     func loginUser(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+        guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
                                      details: nil))
@@ -278,7 +256,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
     }
     
     func registerUser(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+        guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
                                      details: nil))
@@ -300,7 +278,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
     }
     
     func inappMessage(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+        guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
                                      details: nil))
@@ -371,7 +349,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
     }
     
     func sendInAppImpressionOrClick(action: InAppAction, _ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+        guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
                                      details: nil))
@@ -419,7 +397,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
     }
     
     func openNativeAd(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+        guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
                                      details: nil))
@@ -438,7 +416,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
     }
 
     func startOrder(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {         
-        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+        guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
                                      details: nil))
@@ -475,7 +453,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
     }
     
     func addProduct(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+        guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
                                      details: nil))
@@ -524,7 +502,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
     }
 
     func cancelOrder(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+        guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
                                      details: nil))
@@ -560,7 +538,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
     }
 
     func setCustomerId(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+        guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
                                      details: nil))
@@ -578,8 +556,27 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         result(nil)
     }
 
+    func setUserLanguage(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? [String: AnyObject] else {
+            result(FlutterError.init(code: "BAD_ARGS",
+                                     message: "Can't find args",
+                                     details: nil))
+            return
+        }
+        
+        guard let language = args["language"] as? String else {
+            result(FlutterError.init(code: "BAD_LANGUAGE",
+                                     message: "Unknown language",
+                                     details: nil))
+            return
+        }
+
+        EMMA.setUserLanguage(language)
+        result(nil)
+    }
+
     func handleLink(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+        guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
                                      details: nil))
@@ -624,7 +621,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
     
 
     public func disableUserTracking(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let args = call.arguments as? Dictionary<String, AnyObject> else {
+        guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
                                      message: "Can't find args",
                                      details: nil))
