@@ -72,6 +72,7 @@ class _MyAppState extends State<MyApp> {
         print('Notifications permission status: ' + status.toString());
       });
       await EmmaFlutterSdk.shared.requestNotificationsPermission();
+      await EmmaFlutterSdk.shared.checkForRichPush();
     }
 
     return await EmmaFlutterSdk.shared.startPushSystem('icimage');

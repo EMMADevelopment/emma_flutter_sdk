@@ -1,4 +1,8 @@
 # Changelog
+## 1.6.2
+- Fixed startSession callback handling on Android.
+- Fixed permission request resolution for Android < 13.
+
 ## 1.6.1
 - Update native sdk dependencies: added new setUserLanguage method that allows users to manually set the language instead of relying on auto-detection.
 - Fix cancelOrder, setCustomerId, handleLink and disableUserTracking.

@@ -12,6 +12,7 @@ import io.emma.android.interfaces.EMMABatchNativeAdInterface
 import io.emma.android.interfaces.EMMAInAppMessageInterface
 import io.emma.android.interfaces.EMMANativeAdInterface
 import io.emma.android.interfaces.EMMAPermissionInterface
+import io.emma.android.interfaces.EMMASessionStartListener
 import io.emma.android.utils.EMMALog
 import io.emma.android.utils.EMMAUtils
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -205,8 +206,11 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
 
     val configuration = configurationBuilder.build()
 
-    EMMA.getInstance().startSession(configuration)
-    result.success(null)
+    EMMA.getInstance().startSession(configuration, object : EMMASessionStartListener {
+      override fun onSessionStarted() {
+        result.success(null)
+      }
+    })
   }
 
   private fun trackEvent(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -543,6 +547,7 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
   private fun requestNotificationPermission(@NonNull call: MethodCall, @NonNull result: Result) {
       if (Build.VERSION.SDK_INT < 33 || EMMAUtils.getTargetSdkVersion(applicationContext) < 33) {
         Utils.executeOnMainThread(channel, "Emma#onPermissionStatus", PermissionStatus.Unsupported.ordinal)
+        result.success(null)
         return
       }
 
