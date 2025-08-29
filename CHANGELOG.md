@@ -1,4 +1,8 @@
 # Changelog
+## 1.6.3
+- Update the native iOS SDK dependency: iOS 26 update.
+- Fix notificationChannelId only being set when it is not null on Android.
+
 ## 1.6.2
 - Fixed startSession callback handling on Android.
 - Fixed permission request resolution for Android < 13.

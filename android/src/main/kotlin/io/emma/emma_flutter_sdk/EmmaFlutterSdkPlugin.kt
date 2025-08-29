@@ -343,7 +343,7 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     val pushOpt = EMMAPushOptions.Builder(activity::class.java, pushIcon)
             .setNotificationChannelName(channelName)
 
-    if (notificationChannelId == null) {
+    if (notificationChannelId != null) {
       pushOpt.setNotificationChannelId(notificationChannelId)
     }
 
