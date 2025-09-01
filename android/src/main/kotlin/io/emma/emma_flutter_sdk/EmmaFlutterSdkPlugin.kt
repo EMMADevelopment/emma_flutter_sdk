@@ -334,7 +334,7 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     val defaultChannel  = Utils.getAppName(applicationContext) ?: "EMMA"
 
     val channelName = call.argument<String>("notificationChannel") ?: defaultChannel
-    val notificationChannelId = call.argument<String>("notificationChannelId")
+    val notificationChannelId = call.argument<String>("notificationChannelId")?.trim()
 
     if (pushIcon == 0) {
       return returnError(result, call.method, "pushIcon")
@@ -343,7 +343,7 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     val pushOpt = EMMAPushOptions.Builder(activity::class.java, pushIcon)
             .setNotificationChannelName(channelName)
 
-    if (notificationChannelId == null) {
+    if (!notificationChannelId.isNullOrBlank()) {
       pushOpt.setNotificationChannelId(notificationChannelId)
     }
 
