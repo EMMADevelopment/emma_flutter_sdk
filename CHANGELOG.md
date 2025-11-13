@@ -1,4 +1,7 @@
 # Changelog
+## 1.6.4
+- Update native sdk dependencies: 4.15.7 for Android and 4.15.6 for iOS.
+
 ## 1.6.3
 - Update iOS SDK dependency to version 4.15.5.
 - Fix notificationChannelId only being set when it is not null on Android.
