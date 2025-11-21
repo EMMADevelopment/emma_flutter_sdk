@@ -185,7 +185,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         configuration.customPowlinkDomains = args["customPowlinkDomains"] as? [String]
         configuration.shortPowlinkDomains = args["customShortPowlinkDomains"] as? [String]
         configuration.trackScreenEvents = args["trackScreenEvents"] as? Bool ?? false
-        configuration.skanAttribution = args["skanAttribution"] as? Bool ?? false
+        configuration.skanAttribution = args["skanAttribution"] as? Bool ?? true
         configuration.skanCustomManagementAttribution = args["skanCustomManagementAttribution"] as? Bool ?? false
         
         EMMA.startSession(with: configuration)
