@@ -41,8 +41,11 @@ class EMMAFlutterAppDelegate {
     @objc
     @available(iOS 10.0, *)
     func userNotificationCenter(_ center: UNUserNotificationCenter,  willPresent notification: UNNotification, withCompletionHandler   completionHandler: @escaping (_ options:   UNNotificationPresentationOptions) -> Void) {
-        EMMA.handlePush(userInfo: notification.request.content.userInfo)
-        completionHandler([.badge, .sound])
+        if #available(iOS 14.0, *) {
+            completionHandler([.badge, .sound, .banner, .list])
+        } else {
+            completionHandler([.badge, .sound, .alert])
+        }
     }
     
     @objc
@@ -343,8 +346,6 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
             return true
         }
         setPushDelegates()
-        EMMA.handlePush(userInfo: notification as! Dictionary<AnyHashable, Any>)
-        
         return true
     }
     
