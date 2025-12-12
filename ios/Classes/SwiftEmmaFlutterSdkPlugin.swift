@@ -41,8 +41,11 @@ class EMMAFlutterAppDelegate {
     @objc
     @available(iOS 10.0, *)
     func userNotificationCenter(_ center: UNUserNotificationCenter,  willPresent notification: UNNotification, withCompletionHandler   completionHandler: @escaping (_ options:   UNNotificationPresentationOptions) -> Void) {
-        EMMA.handlePush(userInfo: notification.request.content.userInfo)
-        completionHandler([.badge, .sound])
+        if #available(iOS 14.0, *) {
+            completionHandler([.badge, .sound, .banner, .list])
+        } else {
+            completionHandler([.badge, .sound, .alert])
+        }
     }
     
     @objc
@@ -185,7 +188,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         configuration.customPowlinkDomains = args["customPowlinkDomains"] as? [String]
         configuration.shortPowlinkDomains = args["customShortPowlinkDomains"] as? [String]
         configuration.trackScreenEvents = args["trackScreenEvents"] as? Bool ?? false
-        configuration.skanAttribution = args["skanAttribution"] as? Bool ?? false
+        configuration.skanAttribution = args["skanAttribution"] as? Bool ?? true
         configuration.skanCustomManagementAttribution = args["skanCustomManagementAttribution"] as? Bool ?? false
         
         EMMA.startSession(with: configuration)
@@ -343,8 +346,6 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
             return true
         }
         setPushDelegates()
-        EMMA.handlePush(userInfo: notification as! Dictionary<AnyHashable, Any>)
-        
         return true
     }
     
