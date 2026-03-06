@@ -477,7 +477,7 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     for (productMap in productsArray) {
       val productId = productMap["productId"] as? String
       val productName = productMap["productName"] as? String
-      val quantity = productMap["quantity"] as? Int
+      val quantity = productMap["quantity"] as? Double
       val price = productMap["price"] as? Double
       val extras = productMap["extras"] as? HashMap<String, String>
 

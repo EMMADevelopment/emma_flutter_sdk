@@ -150,7 +150,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         case "requestTrackingWithIdfa":
             requestTrackingWithIdfa(call, result)
         case "trackUserLocation":
-            trackLocation(call, result);
+            trackLocation(call, result)
         case "setCustomerId":
             setCustomerId(call, result)
         case "setEmail":
