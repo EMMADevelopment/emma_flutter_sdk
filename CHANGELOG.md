@@ -1,4 +1,17 @@
 # Changelog
+## 1.7.0
+- Update native SDK dependencies: 4.16.0 for iOS and 4.16.+ for Android.
+- Add new method setEmail to set user email.
+- Add new method setUserProfile to set customerId, email and tags in a single call.
+- Add new method trackUserTags to track user tags.
+- Add new method trackPurchase to track purchases with products in a single call.
+- Add new method unregisterPushSystem to unregister from push notifications.
+- Add new model EmmaPurchaseProduct.
+- Add new model EmmaPurchaseRequest for the trackPurchase method.
+- Deprecate trackExtraUserInfo method.
+- Deprecate startOrder, addProduct and trackOrder methods.
+- Remove cancelOrder method.
+
 ## 1.6.4
 - Update native sdk dependencies: 4.15.7 for Android and 4.15.6 for iOS.
 - Fix iOS push notification presentation options to support banner and list on iOS 14+.

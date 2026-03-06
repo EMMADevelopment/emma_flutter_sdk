@@ -61,6 +61,9 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       "trackExtraUserInfo" -> {
         trackExtraUserInfo(call, result)
       }
+      "trackUserTags" -> {
+        trackUserTags(call, result)
+      }
       "loginUser" -> {
         loginUser(call, result)
       }
@@ -72,6 +75,9 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       }
       "startPushSystem" -> {
         startPushSystem(call, result)
+      }
+      "unregisterPushSystem" -> {
+        unregisterPushSystem(result)
       }
       "sendInAppImpression" -> {
         sendInAppImpressionOrClick(InAppAction.Impression, call, result)
@@ -88,6 +94,9 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       "checkForRichPush" -> {
         checkForRichPush(result)
       }
+      "trackPurchase" -> {
+        trackPurchase(call, result)
+      }
       "startOrder" -> {
         startOrder(call, result)
       }
@@ -97,14 +106,17 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       "trackOrder" -> {
         trackOrder(result)
       }
-      "cancelOrder" -> {
-        cancelOrder(call, result)
-      }
       "trackUserLocation" -> {
         trackLocation(result)
       } 
       "setCustomerId" -> {
         setCustomerId(call, result)
+      }
+      "setEmail" -> {
+        setEmail(call, result)
+      }
+      "setUserProfile" -> {
+        setUserProfile(call, result)
       }
       "setUserLanguage" -> {
         setUserLanguage(call, result)
@@ -233,6 +245,13 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     result.success(null)
   }
 
+  private fun trackUserTags(@NonNull call: MethodCall, @NonNull result: Result) {
+    val tags = call.argument<Map<String, String>>("tags")
+            ?: return returnError(result, call.method, "tags")
+    EMMA.getInstance().trackUserTags(tags)
+    result.success(null)
+  }
+
   private fun loginUser(@NonNull call: MethodCall, @NonNull result: Result) {
     val userId = call.argument<String>("userId")
             ?: return returnError(result, call.method, "userId")
@@ -351,6 +370,11 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     result.success(null)
   }
 
+  private fun unregisterPushSystem(@NonNull result: Result) {
+    EMMA.getInstance().unregisterPushSystem()
+    result.success(null)
+  }
+
   private fun convertNativeAdsToMap(@NonNull nativeAds: List<EMMANativeAd>): ArrayList<Map<String, Any>> {
     val mapNativeAds = arrayListOf<Map<String, Any>>()
     for (nativeAd in nativeAds) {
@@ -426,6 +450,52 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     result.success(null)
   }
 
+  private fun trackPurchase(@NonNull call: MethodCall, @NonNull result: Result) {
+    val id = call.argument<String>("id")
+    val totalPrice = call.argument<Double>("totalPrice")
+    val productsArray = call.argument<List<HashMap<String, Any>>>("products")
+
+    if (!Utils.isValidField(id)) {
+      EMMALog.e("Param id must be mandatory in trackPurchase method")
+      result.success(null)
+      return
+    }
+
+    if (!Utils.isValidField(totalPrice)) {
+      EMMALog.e("Param totalPrice must be mandatory in trackPurchase method")
+      result.success(null)
+      return
+    }
+
+    if (!Utils.isValidField(productsArray) || productsArray!!.isEmpty()) {
+      EMMALog.e("Param products must be mandatory and not empty in trackPurchase method")
+      result.success(null)
+      return
+    }
+
+    val products = mutableListOf<EMMAProduct>()
+    for (productMap in productsArray) {
+      val productId = productMap["productId"] as? String
+      val productName = productMap["productName"] as? String
+      val quantity = productMap["quantity"] as? Int
+      val price = productMap["price"] as? Double
+      val extras = productMap["extras"] as? HashMap<String, String>
+
+      if (productId != null && productName != null && quantity != null && price != null) {
+        val product = EMMAProduct(productId, productName, price.toFloat(), quantity.toFloat(), extras)
+        products.add(product)
+      }
+    }
+
+    val customerId = call.argument<String>("customerId")
+    val coupon = call.argument<String>("coupon")
+    val extras = call.argument<HashMap<String, String>>("extras")
+
+    val purchaseRequest = EMMAPurchaseRequest(id!!, totalPrice!!.toFloat(), products, customerId, coupon, extras)
+    EMMA.getInstance().trackPurchase(purchaseRequest)
+    result.success(null)
+  }
+
   private fun startOrder(@NonNull call: MethodCall, @NonNull result: Result) {
     val orderId = call.argument<String>("orderId")
     val totalPrice = call.argument<Double>("totalPrice")
@@ -495,19 +565,6 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     result.success(null)
   }
 
-  private fun cancelOrder(@NonNull call: MethodCall, @NonNull result: Result) {
-    val orderId = call.argument<String>("orderId")
-
-    if (!Utils.isValidField(orderId)) {
-      EMMALog.e("Param orderId must be mandatory in cancelOrder method")
-      result.success(null)
-      return
-    }
-
-    EMMA.getInstance().cancelOrder(orderId)
-    result.success(null)
-  }
-
   private fun trackLocation(@NonNull result: Result) {
     activity.let {
       EMMA.getInstance().setCurrentActivity(it)
@@ -526,6 +583,30 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       return
     }
     EMMA.getInstance().setCustomerId(customerId);
+    result.success(null)
+  }
+
+  private fun setEmail(@NonNull call: MethodCall, @NonNull result: Result) {
+    val email = call.argument<String>("email")
+    if (!Utils.isValidField(email)) {
+      EMMALog.e("Param email must be mandatory in setEmail method")
+      result.success(null)
+      return
+    }
+    EMMA.getInstance().setEmail(email);
+    result.success(null)
+  }
+
+  private fun setUserProfile(@NonNull call: MethodCall, @NonNull result: Result) {
+    val customerId = call.argument<String>("customerId")
+    if (!Utils.isValidField(customerId)) {
+      EMMALog.e("Param customerId must be mandatory in setUserProfile method")
+      result.success(null)
+      return
+    }
+    val email = call.argument<String>("email")
+    val tags = call.argument<Map<String, String>>("tags")
+    EMMA.getInstance().setUserProfile(customerId, email, tags)
     result.success(null)
   }
 

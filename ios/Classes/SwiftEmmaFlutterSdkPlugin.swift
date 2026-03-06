@@ -118,6 +118,8 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
             trackEvent(call, result)
         case "trackExtraUserInfo":
             trackExtraUserInfo(call, result)
+        case "trackUserTags":
+            trackUserTags(call, result)
         case "loginUser":
             loginUser(call, result)
         case "registerUser":
@@ -127,6 +129,8 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         case "startPushSystem":
             setPushDelegates()
             result(nil)
+        case "unregisterPushSystem":
+            unregisterPushSystem(call, result)
         case "sendInAppImpression":
             sendInAppImpressionOrClick(action: .impression , call, result)
         case "sendInAppClick":
@@ -135,20 +139,24 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
             sendInAppImpressionOrClick(action: .dismissedClick , call, result)
         case "openNativeAd":
             openNativeAd(call, result)
+        case "trackPurchase":
+            trackPurchase(call, result)
         case "startOrder":
             startOrder(call, result)
         case "addProduct":
             addProduct(call, result)
         case "trackOrder":
             trackOrder(call, result)
-        case "cancelOrder":
-            cancelOrder(call, result)
         case "requestTrackingWithIdfa":
             requestTrackingWithIdfa(call, result)
         case "trackUserLocation":
             trackLocation(call, result);
         case "setCustomerId":
             setCustomerId(call, result)
+        case "setEmail":
+            setEmail(call, result)
+        case "setUserProfile":
+            setUserProfile(call, result)
         case "setUserLanguage":
             setUserLanguage(call, result)
         case "handleLink":
@@ -235,7 +243,24 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         EMMA.trackExtraUserInfo(info: userAttributes)
         result(nil)
     }
-    
+
+    func trackUserTags(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? [String: AnyObject] else {
+            result(FlutterError.init(code: "BAD_ARGS",
+                                     message: "Can't find args",
+                                     details: nil))
+            return
+        }
+        guard let tags = args["tags"] as? Dictionary<String, String> else {
+            result(FlutterError.init(code: "BAD_ARGS",
+                                     message: "Can't find tags",
+                                     details: nil))
+            return
+        }
+        EMMA.trackUserTags(tags: tags)
+        result(nil)
+    }
+
     func loginUser(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
@@ -340,7 +365,12 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
        
         EMMA.startPushSystem()
     }
-    
+
+    func unregisterPushSystem(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        EMMA.unregisterPushSystem()
+        result(nil)
+    }
+
     public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable : Any] = [:]) -> Bool {
         guard let notification = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] else {
             return true
@@ -413,6 +443,58 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         }
         
         EMMA.openNativeAd(campaignId: String(id))
+        result(nil)
+    }
+
+    func trackPurchase(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? [String: AnyObject] else {
+            result(FlutterError.init(code: "BAD_ARGS",
+                                     message: "Can't find args",
+                                     details: nil))
+            return
+        }
+
+        guard let id = args["id"] as? String else {
+            result(FlutterError.init(code: "BAD_PURCHASE_ID",
+                                     message: "Unknown purchase id",
+                                     details: nil))
+            return
+        }
+
+        guard let totalPrice = args["totalPrice"] as? Double else {
+            result(FlutterError.init(code: "BAD_TOTAL_PRICE",
+                                     message: "Unknown total price",
+                                     details: nil))
+            return
+        }
+
+        guard let productsArray = args["products"] as? [[String: AnyObject]] else {
+            result(FlutterError.init(code: "BAD_PRODUCTS",
+                                     message: "Unknown products array",
+                                     details: nil))
+            return
+        }
+
+        var products: [EMMAProduct] = []
+        for productMap in productsArray {
+            guard let productId = productMap["productId"] as? String,
+                  let productName = productMap["productName"] as? String,
+                  let quantity = productMap["quantity"] as? Double,
+                  let price = productMap["price"] as? Double else {
+                continue
+            }
+
+            let extras = productMap["extras"] as? [String: Any]
+            let product = EMMAProduct(id: productId, name: productName, price: Float(price), qty: Float(quantity), extras: extras)
+            products.append(product)
+        }
+
+        let customerId = args["customerId"] as? String
+        let coupon = args["coupon"] as? String
+        let extras = args["extras"] as? [String: Any]
+
+        let purchaseRequest = EMMAPurchaseRequest(id: id, totalPrice: Float(totalPrice), products: products, customerId: customerId, coupon: coupon, extras: extras)
+        EMMA.trackPurchase(request: purchaseRequest)
         result(nil)
     }
 
@@ -502,26 +584,6 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         result(nil)
     }
 
-    func cancelOrder(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let args = call.arguments as? [String: AnyObject] else {
-            result(FlutterError.init(code: "BAD_ARGS",
-                                     message: "Can't find args",
-                                     details: nil))
-            return
-        }
-        
-        guard let orderId = args["orderId"] as? String else {
-            result(FlutterError.init(code: "BAD_ORDER_ID",
-                                     message: "Unknown order id",
-                                     details: nil))
-            return
-        }
-
-
-        EMMA.cancelOrder(orderId: orderId);
-        result(nil)
-    }
-    
     func requestTrackingWithIdfa(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         if #available(iOS 14.0, *) {
             DispatchQueue.main.async {
@@ -554,6 +616,47 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
         }
         
         EMMA.setCustomerId(customerId: customerId)
+        result(nil)
+    }
+
+    func setEmail(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? [String: AnyObject] else {
+            result(FlutterError.init(code: "BAD_ARGS",
+                                     message: "Can't find args",
+                                     details: nil))
+            return
+        }
+
+        guard let email = args["email"] as? String else {
+            result(FlutterError.init(code: "BAD_EMAIL",
+                                     message: "Unknown email",
+                                     details: nil))
+            return
+        }
+
+        EMMA.setEmail(email: email)
+        result(nil)
+    }
+
+    func setUserProfile(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? [String: AnyObject] else {
+            result(FlutterError.init(code: "BAD_ARGS",
+                                     message: "Can't find args",
+                                     details: nil))
+            return
+        }
+
+        guard let customerId = args["customerId"] as? String else {
+            result(FlutterError.init(code: "BAD_CUSTOMER_ID",
+                                     message: "Unknown customer id",
+                                     details: nil))
+            return
+        }
+
+        let email = args["email"] as? String
+        let tags = args["tags"] as? Dictionary<String, String>
+
+        EMMA.setUserProfile(customerId: customerId, email: email, tags: tags)
         result(nil)
     }
 
