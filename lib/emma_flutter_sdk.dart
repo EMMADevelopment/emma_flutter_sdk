@@ -5,6 +5,8 @@ import 'package:emma_flutter_sdk/src/inapp_message_request.dart';
 import 'package:emma_flutter_sdk/src/native_ad.dart';
 import 'package:emma_flutter_sdk/src/order.dart';
 import 'package:emma_flutter_sdk/src/product.dart';
+import 'package:emma_flutter_sdk/src/purchase_product.dart';
+import 'package:emma_flutter_sdk/src/purchase_request.dart';
 import 'package:emma_flutter_sdk/src/start_session.dart';
 import 'package:flutter/services.dart';
 
@@ -13,6 +15,8 @@ export 'src/inapp_message_request.dart';
 export 'src/native_ad.dart';
 export 'src/order.dart';
 export 'src/product.dart';
+export 'src/purchase_product.dart';
+export 'src/purchase_request.dart';
 
 typedef void ReceivedNativeAdsHandler(List<EmmaNativeAd> nativeAds);
 typedef void PermissionStatusHandler(PermissionStatus status);
@@ -96,9 +100,15 @@ class EmmaFlutterSdk {
   }
 
   /// You can complete user profile with extra parameters
+  @Deprecated('Use trackUserTags instead')
   Future<void> trackExtraUserInfo(Map<String, String> extraUserInfo) async {
     return await _channel
         .invokeMethod('trackExtraUserInfo', {'extraUserInfo': extraUserInfo});
+  }
+
+  /// Track user tags to complete user profile
+  Future<void> trackUserTags(Map<String, String> tags) async {
+    return await _channel.invokeMethod('trackUserTags', {'tags': tags});
   }
 
   /// Sends a login to EMMA
@@ -134,6 +144,11 @@ class EmmaFlutterSdk {
       'notificationChannel': notificationChannel,
       'notificationChannelId': notificationChannelId
     });
+  }
+
+  /// Unregister EMMA Push system
+  Future<void> unregisterPushSystem() async {
+    return await _channel.invokeMethod('unregisterPushSystem');
   }
 
   /// Sends impression associated with inapp campaign. This method is mainly used to send native Ad impressions.
@@ -176,27 +191,28 @@ class EmmaFlutterSdk {
     return await _channel.invokeMethod('checkForRichPush');
   }
 
+  /// Track a purchase with all products in a single call
+  Future<void> trackPurchase(EmmaPurchaseRequest request) async {
+    return await _channel.invokeMethod('trackPurchase', request.toMap());
+  }
+
   /// This method starts the order and save it.
+  @Deprecated('Use trackPurchase instead')
   Future<void> startOrder(EmmaOrder order) async {
     return await _channel.invokeMethod('startOrder', order.toMap());
   }
 
   /// This method adds one product to the initied order. If you want add multiple
   /// products, you call this method multiples times.
+  @Deprecated('Use trackPurchase instead')
   Future<void> addProduct(EmmaProduct product) async {
     return await _channel.invokeMethod('addProduct', product.toMap());
   }
 
   /// This method commits the order and send to server.
+  @Deprecated('Use trackPurchase instead')
   Future<void> trackOrder() async {
     return await _channel.invokeMethod('trackOrder');
-  }
-
-  /// This method cancel order previously added.
-  Future<void> cancelOrder(String orderId) async {
-    return await _channel.invokeMethod('cancelOrder', {
-      'orderId': orderId,
-    });
   }
 
   /// [iOS only] This method requests the permission to collect the IDFA.
@@ -213,6 +229,23 @@ class EmmaFlutterSdk {
   Future<void> setCustomerId(String customerId) async {
     return await _channel.invokeMethod('setCustomerId', {
       'customerId': customerId,
+    });
+  }
+
+  /// This method allows to set user email.
+  Future<void> setEmail(String email) async {
+    return await _channel.invokeMethod('setEmail', {
+      'email': email,
+    });
+  }
+
+  /// This method allows to set user profile with customerId, email and tags.
+  Future<void> setUserProfile(String customerId,
+      {String? email, Map<String, String>? tags}) async {
+    return await _channel.invokeMethod('setUserProfile', {
+      'customerId': customerId,
+      'email': email,
+      'tags': tags,
     });
   }
 
