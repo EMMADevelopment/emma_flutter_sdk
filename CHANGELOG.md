@@ -1,4 +1,9 @@
 # Changelog
+## 1.8.0
+- Add Swift Package Manager (SPM) support for iOS.
+- Update minimum requirements: Flutter >=3.24.0 and Dart SDK >=3.5.0.
+- Restructure iOS native code to support both CocoaPods and SPM integration.
+
 ## 1.7.0
 - Update native SDK dependencies: 4.16.0 for iOS and 4.16.+ for Android.
 - Add new method setEmail to set user email.
