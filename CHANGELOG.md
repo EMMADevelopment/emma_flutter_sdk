@@ -1,5 +1,5 @@
 # Changelog
-## 1.8.0
+## 1.8.0 - 1.8.1
 - Add Swift Package Manager (SPM) support for iOS.
 - Update minimum requirements: Flutter >=3.24.0 and Dart SDK >=3.5.0.
 - Restructure iOS native code to support both CocoaPods and SPM integration.
