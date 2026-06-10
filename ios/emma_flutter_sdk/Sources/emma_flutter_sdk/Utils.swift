@@ -1,3 +1,5 @@
+import Foundation
+
 class Utils {
     
     class func isValidField(_ field: Any?) -> Bool {

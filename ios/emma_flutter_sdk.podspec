@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'emma_flutter_sdk'
-  s.version          = '1.7.0'
+  s.version          = '1.8.1'
   s.summary          = 'EMMA SDK implementation for flutter'
   s.description      = <<-DESC
   EMMA SDK implementation for flutter
@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'EMMA MOBILE SOLUTIONS SL' => 'info@emma.io' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'emma_flutter_sdk/Sources/emma_flutter_sdk/**/*.swift'
   s.dependency 'Flutter'
   s.platform = :ios, '11.0'
 

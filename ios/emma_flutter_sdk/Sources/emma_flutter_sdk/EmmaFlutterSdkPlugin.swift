@@ -93,13 +93,13 @@ class EMMAFlutterAppDelegate {
     }
 }
 
-public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLifeCycleDelegate {
+public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLifeCycleDelegate {
     
     private let channel: FlutterMethodChannel
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "emma_flutter_sdk", binaryMessenger: registrar.messenger())
-        let instance = SwiftEmmaFlutterSdkPlugin(channel)
+        let instance = EmmaFlutterSdkPlugin(channel)
         registrar.addMethodCallDelegate(instance, channel: channel)
         registrar.addApplicationDelegate(instance)
     }
@@ -758,7 +758,7 @@ public class SwiftEmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicat
     }
 }
 
-extension SwiftEmmaFlutterSdkPlugin: EMMAInAppMessageDelegate {
+extension EmmaFlutterSdkPlugin: EMMAInAppMessageDelegate {
     public func onReceiveNativeAds(_ nativeAds: [EMMANativeAd]) {
         let convertedNativeAd = nativeAds.map({(nativeAd) -> [String: Any?] in
             return EmmaSerializer.nativeAdToDictionary(nativeAd)

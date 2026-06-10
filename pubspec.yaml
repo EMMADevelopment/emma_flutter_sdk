@@ -1,11 +1,11 @@
 name: emma_flutter_sdk
 description: EMMA SDK implementation for flutter. This package contains native bindings for our official SDK's. You can find more info at https://support.emma.io or https://www.emma.io
-version: 1.8.0
+version: 1.8.1
 homepage: https://www.emma.io
 
 environment:
-  sdk: ">=2.12.0 <4.0.0"
-  flutter: ">=1.20.0"
+  sdk: ">=3.5.0 <4.0.0"
+  flutter: ">=3.24.0"
 
 dependencies:
   flutter:
