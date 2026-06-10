@@ -5,7 +5,6 @@ import 'package:emma_flutter_sdk/src/inapp_message_request.dart';
 import 'package:emma_flutter_sdk/src/native_ad.dart';
 import 'package:emma_flutter_sdk/src/order.dart';
 import 'package:emma_flutter_sdk/src/product.dart';
-import 'package:emma_flutter_sdk/src/purchase_product.dart';
 import 'package:emma_flutter_sdk/src/purchase_request.dart';
 import 'package:emma_flutter_sdk/src/start_session.dart';
 import 'package:flutter/services.dart';
