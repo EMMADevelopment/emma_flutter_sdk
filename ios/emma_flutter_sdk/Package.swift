@@ -19,7 +19,8 @@ let package = Package(
         .target(
             name: "emma_flutter_sdk",
             dependencies: [
-                .product(name: "EMMA_iOS", package: "eMMa-iOS-SDK")
+                .product(name: "EMMA_iOS", package: "eMMa-iOS-SDK"),
+                .product(name: "FlutterFramework", package: "FlutterFramework")
             ],
             path: "Sources/emma_flutter_sdk",
         )
