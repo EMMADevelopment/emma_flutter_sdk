@@ -124,6 +124,12 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
             loginUser(call, result)
         case "registerUser":
             registerUser(call, result)
+        case "login":
+            login(call, result)
+        case "register":
+            register(call, result)
+        case "loginDefault":
+            loginDefault(call, result)
         case "inAppMessage":
             inappMessage(call, result)
         case "startPushSystem":
@@ -305,6 +311,21 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
         result(nil)
     }
     
+    func login(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        EMMA.login()
+        result(nil)
+    }
+
+    func register(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        EMMA.register()
+        result(nil)
+    }
+
+    func loginDefault(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        EMMA.loginDefault()
+        result(nil)
+    }
+
     func inappMessage(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",

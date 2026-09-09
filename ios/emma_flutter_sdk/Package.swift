@@ -12,7 +12,7 @@ let package = Package(
         .library(name: "emma-flutter-sdk", targets: ["emma_flutter_sdk"])
     ],
     dependencies: [
-        .package(url: "https://github.com/EMMADevelopment/eMMa-iOS-SDK", from: "4.16.0"),
+        .package(url: "https://github.com/EMMADevelopment/eMMa-iOS-SDK", from: "4.17.0"),
         .package(name: "FlutterFramework", path: "../FlutterFramework")
     ],
     targets: [

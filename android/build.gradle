@@ -1,5 +1,5 @@
 group 'io.emma.emma_flutter_sdk'
-version '1.8.1'
+version '1.9.0'
 
 buildscript {
     ext.kotlin_version = '1.6.0'
@@ -41,9 +41,18 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = '11'
+    }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'io.emma:eMMaSDK:4.16.+'
+    implementation 'io.emma:eMMaSDK:4.17.+'
 }

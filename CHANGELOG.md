@@ -1,4 +1,11 @@
 # Changelog
+## 1.9.0
+- Update native SDK dependencies: 4.17.0 for iOS and 4.17.0 for Android.
+- Add new method `login()` to register an anonymous login event without user identifier.
+- Add new method `register()` to register an anonymous register event without user identifier.
+- Add new method `loginDefault()` to login using the last stored user data in the SDK.
+- Add `EmmaFlutterSdk.sdkVersion` constant to expose the Flutter plugin version.
+
 ## 1.8.1
 - Add FlutterFramework dependency to Package.swift
 

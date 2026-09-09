@@ -23,6 +23,7 @@ typedef void DeepLinkHandler(String url);
 
 class EmmaFlutterSdk {
   static EmmaFlutterSdk shared = new EmmaFlutterSdk();
+  static const String sdkVersion = "1.9.0";
 
   // method channels
   MethodChannel _channel = const MethodChannel('emma_flutter_sdk');
@@ -124,6 +125,21 @@ class EmmaFlutterSdk {
   Future<void> registerUser(String userId, String email) async {
     return await _channel
         .invokeMethod('registerUser', {'userId': userId, 'email': email});
+  }
+
+  /// Sends an anonymous login event to EMMA without any user identifier
+  Future<void> login() async {
+    return await _channel.invokeMethod('login');
+  }
+
+  /// Sends an anonymous register event to EMMA without any user identifier
+  Future<void> register() async {
+    return await _channel.invokeMethod('register');
+  }
+
+  /// Sends a login event using the last stored user data in the SDK
+  Future<void> loginDefault() async {
+    return await _channel.invokeMethod('loginDefault');
   }
 
   /// Checks for an InApp Message

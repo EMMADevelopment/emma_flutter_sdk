@@ -70,6 +70,15 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       "registerUser" -> {
         registerUser(call, result)
       }
+      "login" -> {
+        login(result)
+      }
+      "register" -> {
+        register(result)
+      }
+      "loginDefault" -> {
+        loginDefault(result)
+      }
       "inAppMessage" -> {
         inappMessage(call, result)
       }
@@ -265,6 +274,21 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
             ?: return returnError(result, call.method, "userId")
     val email = call.argument<String>("email") ?: ""
     EMMA.getInstance().registerUser(userId, email)
+    result.success(null)
+  }
+
+  private fun login(@NonNull result: Result) {
+    EMMA.getInstance().login()
+    result.success(null)
+  }
+
+  private fun register(@NonNull result: Result) {
+    EMMA.getInstance().register()
+    result.success(null)
+  }
+
+  private fun loginDefault(@NonNull result: Result) {
+    EMMA.getInstance().loginDefault()
     result.success(null)
   }
 
