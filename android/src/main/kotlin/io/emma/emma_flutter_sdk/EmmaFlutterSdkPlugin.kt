@@ -148,6 +148,9 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       "disableUserTracking" -> {
         disableUserTracking(call, result)
       }
+      "closeInApp" -> {
+        closeInApp(call, result)
+      }
       else -> {
         EMMALog.w("Method ${call.method} not implemented")
         Utils.runOnMainThread(Runnable { result.notImplemented() })
@@ -708,6 +711,21 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
   private fun disableUserTracking(@NonNull call: MethodCall, @NonNull result: Result) {
     val deleteUser = call.argument<Boolean>("deleteUser") ?: false
     EMMA.getInstance().disableUserTracking(deleteUser)
+    result.success(null)
+  }
+
+  private fun closeInApp(@NonNull call: MethodCall, @NonNull result: Result) {
+    val type = call.argument<String>("type")
+            ?: return returnError(result, call.method, "type")
+
+    val campaignType = EmmaSerializer.getInAppRequestTypeFromString(type)
+    if (campaignType == null) {
+      EMMALog.w("Invalid inapp type $type. Skip closeInApp.")
+      result.success(null)
+      return
+    }
+
+    EMMA.getInstance().closeInAppMessage(campaignType)
     result.success(null)
   }
 }

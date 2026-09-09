@@ -173,6 +173,8 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
             enableUserTracking(call, result)
         case "disableUserTracking":
             disableUserTracking(call, result)
+        case "closeInApp":
+            closeInApp(call, result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -733,6 +735,22 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
         }
     }
     
+    func closeInApp(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? [String: AnyObject],
+              let type = args["type"] as? String else {
+            result(FlutterError(code: "BAD_ARGS", message: "Can't find args", details: nil))
+            return
+        }
+
+        guard let inAppType = EmmaSerializer.inAppTypeFromString(inAppType: type) else {
+            result(FlutterError(code: "BAD_INAPP_TYPE", message: "Not supported inapp type", details: nil))
+            return
+        }
+
+        EMMA.closeInApp(type: inAppType)
+        result(nil)
+    }
+
     //MARK: GDPR
     public func isUserTrackingEnabled(_ result: @escaping FlutterResult) {
         result(EMMA.isUserTrackingEnabled())

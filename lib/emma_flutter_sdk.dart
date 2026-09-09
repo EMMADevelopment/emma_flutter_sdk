@@ -166,6 +166,13 @@ class EmmaFlutterSdk {
     return await _channel.invokeMethod('unregisterPushSystem');
   }
 
+  /// Closes the active in-app message of the given [inAppType] programmatically.
+  /// Applies to strip, banner, adBall and startview types.
+  Future<void> closeInApp(InAppType inAppType) async {
+    String type = inAppType.toString().split(".")[1];
+    return await _channel.invokeMethod('closeInApp', {"type": type});
+  }
+
   /// Sends impression associated with inapp campaign. This method is mainly used to send native Ad impressions.
   /// Formats startview, banner, adball send impression automatically
   /// [campaignId] The campaign identifier
