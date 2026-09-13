@@ -6,11 +6,13 @@ import 'package:emma_flutter_sdk/src/native_ad.dart';
 import 'package:emma_flutter_sdk/src/order.dart';
 import 'package:emma_flutter_sdk/src/product.dart';
 import 'package:emma_flutter_sdk/src/purchase_request.dart';
+import 'package:emma_flutter_sdk/src/install_attribution.dart';
 import 'package:emma_flutter_sdk/src/start_session.dart';
 import 'package:flutter/services.dart';
 
 export 'src/defines.dart';
 export 'src/inapp_message_request.dart';
+export 'src/install_attribution.dart';
 export 'src/native_ad.dart';
 export 'src/order.dart';
 export 'src/product.dart';
@@ -312,5 +314,11 @@ class EmmaFlutterSdk {
   // Checks if user tracking is enabled or disabled.
   Future<bool> isUserTrackingEnabled() async {
     return await _channel.invokeMethod('isUserTrackingEnabled');
+  }
+
+  // Returns install attribution info (campaign, source and provider) for the current install.
+  Future<EmmaInstallAttribution> getInstallAttributionInfo() async {
+    final result = await _channel.invokeMethod<Map>('getInstallAttributionInfo');
+    return EmmaInstallAttribution.fromMap(Map<String, dynamic>.from(result ?? {}));
   }
 }

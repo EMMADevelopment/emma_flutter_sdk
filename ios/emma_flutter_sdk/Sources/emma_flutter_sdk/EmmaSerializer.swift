@@ -52,5 +52,50 @@ class EmmaSerializer {
             return nil
         }
     }
+
+    static func installAttributionToDictionary(_ attribution: EMMAInstallAttribution?) -> [String: Any?] {
+        guard let attribution = attribution else {
+            return ["status": "", "campaign": NSNull()]
+        }
+
+        var result: [String: Any?] = ["status": attribution.status ?? ""]
+
+        guard let campaign = attribution.campaign else {
+            result["campaign"] = NSNull()
+            return result
+        }
+
+        var campaignDict: [String: Any?] = [
+            "id": Int(campaign.id),
+            "name": campaign.name,
+            "clickParams": campaign.clickParams ?? NSNull()
+        ]
+
+        guard let source = campaign.source else {
+            campaignDict["source"] = NSNull()
+            result["campaign"] = campaignDict
+            return result
+        }
+
+        var sourceDict: [String: Any?] = [
+            "id": Int(source.id),
+            "name": source.name,
+            "channel": source.channel,
+            "params": source.params ?? NSNull()
+        ]
+
+        if let provider = source.provider {
+            sourceDict["provider"] = [
+                "id": Int(provider.id),
+                "name": provider.name
+            ]
+        } else {
+            sourceDict["provider"] = NSNull()
+        }
+
+        campaignDict["source"] = sourceDict
+        result["campaign"] = campaignDict
+        return result
+    }
 }
             

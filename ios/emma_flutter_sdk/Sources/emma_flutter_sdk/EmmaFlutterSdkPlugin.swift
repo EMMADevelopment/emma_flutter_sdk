@@ -94,7 +94,9 @@ class EMMAFlutterAppDelegate {
 }
 
 public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLifeCycleDelegate {
-    
+
+    static var installAttributionDelegate: EmmaInstallAttributionDelegate?
+
     private let channel: FlutterMethodChannel
     
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -175,6 +177,8 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
             disableUserTracking(call, result)
         case "closeInApp":
             closeInApp(call, result)
+        case "getInstallAttributionInfo":
+            getInstallAttributionInfo(call, result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -749,6 +753,12 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
 
         EMMA.closeInApp(type: inAppType)
         result(nil)
+    }
+
+    func getInstallAttributionInfo(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        let delegate = EmmaInstallAttributionDelegate(result: result)
+        EmmaFlutterSdkPlugin.installAttributionDelegate = delegate
+        EMMALegacy.installAttributionInfo(delegate)
     }
 
     //MARK: GDPR

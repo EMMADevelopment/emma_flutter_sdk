@@ -151,6 +151,9 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       "closeInApp" -> {
         closeInApp(call, result)
       }
+      "getInstallAttributionInfo" -> {
+        getInstallAttributionInfo(result)
+      }
       else -> {
         EMMALog.w("Method ${call.method} not implemented")
         Utils.runOnMainThread(Runnable { result.notImplemented() })
@@ -712,6 +715,12 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
     val deleteUser = call.argument<Boolean>("deleteUser") ?: false
     EMMA.getInstance().disableUserTracking(deleteUser)
     result.success(null)
+  }
+
+  private fun getInstallAttributionInfo(@NonNull result: Result) {
+    EMMA.getInstance().getInstallAttributionInfo { attribution ->
+      result.success(EmmaSerializer.installAttributionToMap(attribution))
+    }
   }
 
   private fun closeInApp(@NonNull call: MethodCall, @NonNull result: Result) {
