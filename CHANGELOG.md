@@ -6,6 +6,7 @@
 - Add new method `loginDefault()` to login using the last stored user data in the SDK.
 - Add `EmmaFlutterSdk.sdkVersion` constant to expose the Flutter plugin version.
 - Add new method `closeInApp(InAppType)` to programmatically close an active in-app message by type.
+- Add new method `getInstallAttributionInfo()` to retrieve install attribution data.
 
 ## 1.8.1
 - Add FlutterFramework dependency to Package.swift
