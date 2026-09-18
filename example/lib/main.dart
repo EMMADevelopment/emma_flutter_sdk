@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   runApp(MyApp());
 }
 
@@ -17,6 +19,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  static const _stripChannel = MethodChannel('app/strip_margin');
+  bool _stripVisible = false;
   String platformVersion = 'Unknown';
   // Add the following line
   String? deeplink;
@@ -32,7 +36,7 @@ class _MyAppState extends State<MyApp> {
       GlobalKey<CustomButtonState>();
 
   final startSessionParams = StartSession(
-    sessionKey: 'emmaflutter2BMRb2NQ0',
+    sessionKey: '',
     queueTime: 10,
     isDebug: true,
     customShortPowlinkDomains: ["emma.shortLink.mycompany.com"],
@@ -44,6 +48,18 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    _stripChannel.setMethodCallHandler((call) async {
+      if (call.method == 'stripVisibility') {
+        setState(() => _stripVisible = call.arguments as bool);
+        // Wait for Flutter to render the new frame before signaling native.
+        // This lets the native OnPreDrawListener unblock only after the layout
+        // is already painted, preventing any visible reflow flash.
+        await WidgetsBinding.instance.endOfFrame;
+      }
+    });
+    _stripChannel.invokeMethod<bool>('getInitialStripState').then((visible) {
+      if (visible != null && mounted) setState(() => _stripVisible = visible);
+    });
     initPlatformState();
     initEMMA()
         .then((value) => initEMMAPush())
@@ -99,7 +115,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     setState(() {
-      platformVersion = platformVersion;
+      this.platformVersion = platformVersion;
     });
   }
 
@@ -121,6 +137,13 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      builder: (context, child) {
+        return MediaQuery.removePadding(
+          context: context,
+          removeTop: _stripVisible,
+          child: child!,
+        );
+      },
       home: Scaffold(
           appBar: AppBar(
             title: const Text(
@@ -141,6 +164,10 @@ class _MyAppState extends State<MyApp> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Title(title: "Native SDK", log: platformVersion),
+                      Title(
+                          title: "Flutter plugin",
+                          log: EmmaFlutterSdk.sdkVersion),
                       Title(
                           title: "Deeplink",
                           log: this.deeplink == null
@@ -148,6 +175,15 @@ class _MyAppState extends State<MyApp> {
                               : "Deeplink received"),
                       Text(this.deeplink ??
                           "Received deeplink will be displayed here."),
+                      CustomButton(
+                        text: "Get Attribution Info",
+                        onPressed: () async {
+                          final info = await EmmaFlutterSdk.shared
+                              .getInstallAttributionInfo();
+                          print(
+                              'status=${info.status} campaignId=${info.campaign?.id}');
+                        },
+                      ),
                       Title(title: "Session", log: "Session started"),
                       Text(
                           "Session is required. Usually, it should be triggered when the App is ready."),
@@ -161,7 +197,7 @@ class _MyAppState extends State<MyApp> {
                         text: "Register User",
                         onPressed: () async {
                           await EmmaFlutterSdk.shared
-                              .registerUser("flutteruser", "emma@flutter.dev");
+                              .registerUser("2002", "salva@flutter.dev");
                         },
                       ),
                       Title(title: "Log in User", log: ""),
@@ -169,7 +205,26 @@ class _MyAppState extends State<MyApp> {
                         text: "Log in User",
                         onPressed: () async {
                           await EmmaFlutterSdk.shared
-                              .loginUser("flutteruser", "emma@flutter.dev");
+                              .loginUser("2002", "salva@flutter.dev");
+                        },
+                      ),
+                      Title(title: "Anonymous Auth", log: ""),
+                      CustomButton(
+                        text: "Login (anonymous)",
+                        onPressed: () async {
+                          await EmmaFlutterSdk.shared.login();
+                        },
+                      ),
+                      CustomButton(
+                        text: "Register (anonymous)",
+                        onPressed: () async {
+                          await EmmaFlutterSdk.shared.register();
+                        },
+                      ),
+                      CustomButton(
+                        text: "Login Default (anonymous)",
+                        onPressed: () async {
+                          await EmmaFlutterSdk.shared.loginDefault();
                         },
                       ),
                       Title(title: "Events and Extras", log: ""),
@@ -244,6 +299,21 @@ class _MyAppState extends State<MyApp> {
                                     .inAppMessage(request);
                               })
                           : Container(),
+                      CustomButton(
+                        text: "Close Strip",
+                        onPressed: () async {
+                          await EmmaFlutterSdk.shared
+                              .closeInApp(InAppType.strip);
+                        },
+                      ),
+                      (Platform.isAndroid)
+                          ? CustomButton(
+                              text: "Close Banner",
+                              onPressed: () async {
+                                await EmmaFlutterSdk.shared
+                                    .closeInApp(InAppType.banner);
+                              })
+                          : Container(),
                       Title(title: "Orders and Products", log: ""),
                       Text("Track your orders."),
                       Table(
@@ -302,7 +372,6 @@ class _MyAppState extends State<MyApp> {
                               text: "Cancel Order",
                               isDisabled: true,
                               onPressed: () async {
-                                EmmaFlutterSdk.shared.cancelOrder("EMMA");
                                 setState(() {
                                   startOrderKey.currentState?.setEnabled(true);
                                   addProductKey.currentState?.setEnabled(false);

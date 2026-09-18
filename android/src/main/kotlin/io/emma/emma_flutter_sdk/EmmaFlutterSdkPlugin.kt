@@ -70,6 +70,15 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       "registerUser" -> {
         registerUser(call, result)
       }
+      "login" -> {
+        login(result)
+      }
+      "register" -> {
+        register(result)
+      }
+      "loginDefault" -> {
+        loginDefault(result)
+      }
       "inAppMessage" -> {
         inappMessage(call, result)
       }
@@ -138,6 +147,12 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
       }
       "disableUserTracking" -> {
         disableUserTracking(call, result)
+      }
+      "closeInApp" -> {
+        closeInApp(call, result)
+      }
+      "getInstallAttributionInfo" -> {
+        getInstallAttributionInfo(result)
       }
       else -> {
         EMMALog.w("Method ${call.method} not implemented")
@@ -265,6 +280,21 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
             ?: return returnError(result, call.method, "userId")
     val email = call.argument<String>("email") ?: ""
     EMMA.getInstance().registerUser(userId, email)
+    result.success(null)
+  }
+
+  private fun login(@NonNull result: Result) {
+    EMMA.getInstance().login()
+    result.success(null)
+  }
+
+  private fun register(@NonNull result: Result) {
+    EMMA.getInstance().register()
+    result.success(null)
+  }
+
+  private fun loginDefault(@NonNull result: Result) {
+    EMMA.getInstance().loginDefault()
     result.success(null)
   }
 
@@ -684,6 +714,27 @@ class EmmaFlutterSdkPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, Pl
   private fun disableUserTracking(@NonNull call: MethodCall, @NonNull result: Result) {
     val deleteUser = call.argument<Boolean>("deleteUser") ?: false
     EMMA.getInstance().disableUserTracking(deleteUser)
+    result.success(null)
+  }
+
+  private fun getInstallAttributionInfo(@NonNull result: Result) {
+    EMMA.getInstance().getInstallAttributionInfo { attribution ->
+      result.success(EmmaSerializer.installAttributionToMap(attribution))
+    }
+  }
+
+  private fun closeInApp(@NonNull call: MethodCall, @NonNull result: Result) {
+    val type = call.argument<String>("type")
+            ?: return returnError(result, call.method, "type")
+
+    val campaignType = EmmaSerializer.getInAppRequestTypeFromString(type)
+    if (campaignType == null) {
+      EMMALog.w("Invalid inapp type $type. Skip closeInApp.")
+      result.success(null)
+      return
+    }
+
+    EMMA.getInstance().closeInAppMessage(campaignType)
     result.success(null)
   }
 }

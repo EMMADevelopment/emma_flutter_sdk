@@ -2,6 +2,7 @@ package io.emma.emma_flutter_sdk
 
 import io.emma.android.enums.CommunicationTypes
 import io.emma.android.model.EMMACampaign
+import io.emma.android.model.EMMAInstallAttribution
 import io.emma.android.model.EMMANativeAd
 import io.emma.android.model.EMMANativeAdField
 import io.emma.android.utils.EMMALog
@@ -96,6 +97,50 @@ object EmmaSerializer {
                 return null
             }
         }
+    }
+
+    fun installAttributionToMap(attribution: EMMAInstallAttribution?): Map<String, Any?> {
+        val result = HashMap<String, Any?>()
+        if (attribution == null) {
+            result["status"] = ""
+            result["campaign"] = null
+            return result
+        }
+        result["status"] = attribution.status ?: ""
+        val campaign = attribution.campaign
+        if (campaign == null) {
+            result["campaign"] = null
+            return result
+        }
+        val campaignMap = HashMap<String, Any?>()
+        campaignMap["id"] = campaign.id
+        campaignMap["name"] = campaign.name
+        campaignMap["clickParams"] = campaign.clickParams?.let { params ->
+            val m = HashMap<String, String>()
+            params.forEach { (k, v) -> m[k] = v }
+            m
+        }
+        val source = campaign.source
+        if (source != null) {
+            val sourceMap = HashMap<String, Any?>()
+            sourceMap["id"] = source.id
+            sourceMap["name"] = source.name
+            sourceMap["channel"] = source.channel
+            sourceMap["params"] = source.params?.let { params ->
+                val m = HashMap<String, String>()
+                params.forEach { (k, v) -> m[k] = v }
+                m
+            }
+            val provider = source.provider
+            sourceMap["provider"] = if (provider != null)
+                hashMapOf("id" to provider.id, "name" to provider.name)
+            else null
+            campaignMap["source"] = sourceMap
+        } else {
+            campaignMap["source"] = null
+        }
+        result["campaign"] = campaignMap
+        return result
     }
 
 }

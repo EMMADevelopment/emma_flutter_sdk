@@ -6,11 +6,13 @@ import 'package:emma_flutter_sdk/src/native_ad.dart';
 import 'package:emma_flutter_sdk/src/order.dart';
 import 'package:emma_flutter_sdk/src/product.dart';
 import 'package:emma_flutter_sdk/src/purchase_request.dart';
+import 'package:emma_flutter_sdk/src/install_attribution.dart';
 import 'package:emma_flutter_sdk/src/start_session.dart';
 import 'package:flutter/services.dart';
 
 export 'src/defines.dart';
 export 'src/inapp_message_request.dart';
+export 'src/install_attribution.dart';
 export 'src/native_ad.dart';
 export 'src/order.dart';
 export 'src/product.dart';
@@ -23,6 +25,7 @@ typedef void DeepLinkHandler(String url);
 
 class EmmaFlutterSdk {
   static EmmaFlutterSdk shared = new EmmaFlutterSdk();
+  static const String sdkVersion = "1.9.0";
 
   // method channels
   MethodChannel _channel = const MethodChannel('emma_flutter_sdk');
@@ -126,6 +129,21 @@ class EmmaFlutterSdk {
         .invokeMethod('registerUser', {'userId': userId, 'email': email});
   }
 
+  /// Sends an anonymous login event to EMMA without any user identifier
+  Future<void> login() async {
+    return await _channel.invokeMethod('login');
+  }
+
+  /// Sends an anonymous register event to EMMA without any user identifier
+  Future<void> register() async {
+    return await _channel.invokeMethod('register');
+  }
+
+  /// Sends a login event using the last stored user data in the SDK
+  Future<void> loginDefault() async {
+    return await _channel.invokeMethod('loginDefault');
+  }
+
   /// Checks for an InApp Message
   /// You must pass [EmmaInAppMessageRequest] of message you're expecting
   Future<void> inAppMessage(EmmaInAppMessageRequest request) async {
@@ -148,6 +166,13 @@ class EmmaFlutterSdk {
   /// Unregister EMMA Push system
   Future<void> unregisterPushSystem() async {
     return await _channel.invokeMethod('unregisterPushSystem');
+  }
+
+  /// Closes the active in-app message of the given [inAppType] programmatically.
+  /// Applies to strip, banner, adBall and startview types.
+  Future<void> closeInApp(InAppType inAppType) async {
+    String type = inAppType.toString().split(".")[1];
+    return await _channel.invokeMethod('closeInApp', {"type": type});
   }
 
   /// Sends impression associated with inapp campaign. This method is mainly used to send native Ad impressions.
@@ -289,5 +314,11 @@ class EmmaFlutterSdk {
   // Checks if user tracking is enabled or disabled.
   Future<bool> isUserTrackingEnabled() async {
     return await _channel.invokeMethod('isUserTrackingEnabled');
+  }
+
+  // Returns install attribution info (campaign, source and provider) for the current install.
+  Future<EmmaInstallAttribution> getInstallAttributionInfo() async {
+    final result = await _channel.invokeMethod<Map>('getInstallAttributionInfo');
+    return EmmaInstallAttribution.fromMap(Map<String, dynamic>.from(result ?? {}));
   }
 }

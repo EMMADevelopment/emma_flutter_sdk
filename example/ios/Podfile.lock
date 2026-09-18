@@ -1,35 +1,16 @@
 PODS:
-  - eMMa (4.15.4)
-  - emma_flutter_sdk (1.6.1):
-    - eMMa (~> 4.15.4)
-    - Flutter
   - Flutter (1.0.0)
-  - url_launcher_ios (0.0.1):
-    - Flutter
 
 DEPENDENCIES:
-  - emma_flutter_sdk (from `.symlinks/plugins/emma_flutter_sdk/ios`)
   - Flutter (from `Flutter`)
-  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
-
-SPEC REPOS:
-  trunk:
-    - eMMa
 
 EXTERNAL SOURCES:
-  emma_flutter_sdk:
-    :path: ".symlinks/plugins/emma_flutter_sdk/ios"
   Flutter:
     :path: Flutter
-  url_launcher_ios:
-    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  eMMa: 0b1d9d450e1e29380a8e8a1060c351317e819bed
-  emma_flutter_sdk: 5af73345dcfed4941692c112df7fb02e5e9c11dd
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  url_launcher_ios: bbd758c6e7f9fd7b5b1d4cde34d2b95fcce5e812
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
 
-PODFILE CHECKSUM: 4e8f8b2be68aeea4c0d5beb6ff1e79fface1d048
+PODFILE CHECKSUM: cc1f88378b4bfcf93a6ce00d2c587857c6008d3b
 
 COCOAPODS: 1.16.2

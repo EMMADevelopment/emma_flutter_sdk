@@ -94,7 +94,9 @@ class EMMAFlutterAppDelegate {
 }
 
 public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLifeCycleDelegate {
-    
+
+    static var installAttributionDelegate: EmmaInstallAttributionDelegate?
+
     private let channel: FlutterMethodChannel
     
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -124,6 +126,12 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
             loginUser(call, result)
         case "registerUser":
             registerUser(call, result)
+        case "login":
+            login(call, result)
+        case "register":
+            register(call, result)
+        case "loginDefault":
+            loginDefault(call, result)
         case "inAppMessage":
             inappMessage(call, result)
         case "startPushSystem":
@@ -167,6 +175,10 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
             enableUserTracking(call, result)
         case "disableUserTracking":
             disableUserTracking(call, result)
+        case "closeInApp":
+            closeInApp(call, result)
+        case "getInstallAttributionInfo":
+            getInstallAttributionInfo(call, result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -305,6 +317,21 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
         result(nil)
     }
     
+    func login(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        EMMA.login()
+        result(nil)
+    }
+
+    func register(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        EMMA.register()
+        result(nil)
+    }
+
+    func loginDefault(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        EMMA.loginDefault()
+        result(nil)
+    }
+
     func inappMessage(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let args = call.arguments as? [String: AnyObject] else {
             result(FlutterError.init(code: "BAD_ARGS",
@@ -712,6 +739,28 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
         }
     }
     
+    func closeInApp(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        guard let args = call.arguments as? [String: AnyObject],
+              let type = args["type"] as? String else {
+            result(FlutterError(code: "BAD_ARGS", message: "Can't find args", details: nil))
+            return
+        }
+
+        guard let inAppType = EmmaSerializer.inAppTypeFromString(inAppType: type) else {
+            result(FlutterError(code: "BAD_INAPP_TYPE", message: "Not supported inapp type", details: nil))
+            return
+        }
+
+        EMMA.closeInApp(type: inAppType)
+        result(nil)
+    }
+
+    func getInstallAttributionInfo(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        let delegate = EmmaInstallAttributionDelegate(result: result)
+        EmmaFlutterSdkPlugin.installAttributionDelegate = delegate
+        EMMALegacy.installAttributionInfo(delegate)
+    }
+
     //MARK: GDPR
     public func isUserTrackingEnabled(_ result: @escaping FlutterResult) {
         result(EMMA.isUserTrackingEnabled())
