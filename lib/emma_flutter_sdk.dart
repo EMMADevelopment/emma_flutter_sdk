@@ -25,7 +25,7 @@ typedef void DeepLinkHandler(String url);
 
 class EmmaFlutterSdk {
   static EmmaFlutterSdk shared = new EmmaFlutterSdk();
-  static const String sdkVersion = "1.9.0";
+  static const String sdkVersion = "1.10.0";
 
   // method channels
   MethodChannel _channel = const MethodChannel('emma_flutter_sdk');
