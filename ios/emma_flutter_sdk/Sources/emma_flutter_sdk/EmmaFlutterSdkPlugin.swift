@@ -104,6 +104,9 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
         let instance = EmmaFlutterSdkPlugin(channel)
         registrar.addMethodCallDelegate(instance, channel: channel)
         registrar.addApplicationDelegate(instance)
+        if #available(iOS 13.0, *) {
+            registrar.addSceneDelegate(instance)
+        }
     }
     
     public init(_ channel: FlutterMethodChannel) {
@@ -835,5 +838,35 @@ extension EmmaFlutterSdkPlugin: EMMAInAppMessageDelegate {
     
     public func onBatchNativeAdReceived(_ nativeAds: [EMMANativeAd]) {
         onReceiveNativeAds(nativeAds)
+    }
+}
+
+@available(iOS 13.0, *)
+extension EmmaFlutterSdkPlugin: FlutterSceneLifeCycleDelegate {
+    public func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions?) -> Bool {
+        guard let connectionOptions = connectionOptions else { return true }
+        if connectionOptions.notificationResponse != nil {
+            setPushDelegates()
+        }
+        if let urlContext = connectionOptions.urlContexts.first {
+            processDeepLink(url: urlContext.url)
+        }
+        if let userActivity = connectionOptions.userActivities.first,
+           let url = userActivity.webpageURL {
+            processDeepLink(url: url)
+        }
+        return true
+    }
+
+    public func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) -> Bool {
+        guard let urlContext = URLContexts.first else { return false }
+        processDeepLink(url: urlContext.url)
+        return true
+    }
+
+    public func scene(_ scene: UIScene, continue userActivity: NSUserActivity) -> Bool {
+        guard let url = userActivity.webpageURL else { return false }
+        processDeepLink(url: url)
+        return true
     }
 }
