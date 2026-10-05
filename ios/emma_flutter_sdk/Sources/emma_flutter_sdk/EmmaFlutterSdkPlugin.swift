@@ -51,7 +51,7 @@ class EMMAFlutterAppDelegate {
     @objc
     @available(iOS 10.0, *)
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        EMMA.handlePush(userInfo: response.notification.request.content.userInfo, actionIdentifier: response.actionIdentifier)
+        EmmaFlutterSdkPlugin.handlePushResponse(response)
         completionHandler()
     }
     
@@ -98,6 +98,46 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
     static var installAttributionDelegate: EmmaInstallAttributionDelegate?
 
     private let channel: FlutterMethodChannel
+
+    private static var isSessionStarted = false
+    private static var pushMethodsSwizzled = false
+    private static var pendingPushResponse: UNNotificationResponse?
+    private static var pendingLink: URL?
+    private static var lastHandledPushKey: String?
+
+    // Push opens and links received before startSession are held and replayed once the session exists.
+    static func handlePushResponse(_ response: UNNotificationResponse) {
+        guard isSessionStarted else {
+            pendingPushResponse = response
+            return
+        }
+        let key = response.notification.request.identifier + "|" + response.actionIdentifier
+        guard key != lastHandledPushKey else {
+            return
+        }
+        lastHandledPushKey = key
+        EMMA.handlePush(userInfo: response.notification.request.content.userInfo, actionIdentifier: response.actionIdentifier)
+    }
+
+    private static func handleLinkWhenSessionReady(_ url: URL) {
+        guard isSessionStarted else {
+            pendingLink = url
+            return
+        }
+        EMMA.handleLink(url: url)
+    }
+
+    private static func sessionDidStart() {
+        isSessionStarted = true
+        if let response = pendingPushResponse {
+            pendingPushResponse = nil
+            handlePushResponse(response)
+        }
+        if let url = pendingLink {
+            pendingLink = nil
+            handleLinkWhenSessionReady(url)
+        }
+    }
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "emma_flutter_sdk", binaryMessenger: registrar.messenger())
@@ -215,6 +255,7 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
         configuration.skanCustomManagementAttribution = args["skanCustomManagementAttribution"] as? Bool ?? false
         
         EMMA.startSession(with: configuration)
+        EmmaFlutterSdkPlugin.sessionDidStart()
         
         result(nil)
     }
@@ -387,7 +428,10 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
         if let applicationDelegate = UIApplication.shared.delegate as? FlutterAppDelegate {
             let pushDelegate = EMMAFlutterAppDelegate()
             if #available(iOS 10.0, *) {
-                pushDelegate.swizzlePushMethods()
+                if !EmmaFlutterSdkPlugin.pushMethodsSwizzled {
+                    EmmaFlutterSdkPlugin.pushMethodsSwizzled = true
+                    pushDelegate.swizzlePushMethods()
+                }
                 EMMA.setPushNotificationsDelegate(delegate: applicationDelegate)
             }
             EMMA.setPushSystemDelegate(delegate: applicationDelegate)
@@ -736,7 +780,7 @@ public class EmmaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterApplicationLi
     }
     
     private func processDeepLink(url: URL) {
-        EMMA.handleLink(url: url)
+        EmmaFlutterSdkPlugin.handleLinkWhenSessionReady(url)
         DispatchQueue.main.async {
             self.channel.invokeMethod("Emma#onDeepLinkReceived", arguments: url.absoluteString)
         }
@@ -845,8 +889,8 @@ extension EmmaFlutterSdkPlugin: EMMAInAppMessageDelegate {
 extension EmmaFlutterSdkPlugin: FlutterSceneLifeCycleDelegate {
     public func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions?) -> Bool {
         guard let connectionOptions = connectionOptions else { return true }
-        if connectionOptions.notificationResponse != nil {
-            setPushDelegates()
+        if let response = connectionOptions.notificationResponse {
+            EmmaFlutterSdkPlugin.handlePushResponse(response)
         }
         if let urlContext = connectionOptions.urlContexts.first {
             processDeepLink(url: urlContext.url)
