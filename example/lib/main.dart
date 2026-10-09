@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> {
     });
 
     EmmaFlutterSdk.shared.setDeepLinkHandler((url) {
-      this.deeplink = url;
+      if (mounted) setState(() => this.deeplink = url);
       print(url);
     });
   }

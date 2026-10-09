@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "emma_flutter_sdk",
     platforms: [
-        .iOS("11.0")
+        .iOS("12.0")
     ],
     products: [
         .library(name: "emma-flutter-sdk", targets: ["emma_flutter_sdk"])

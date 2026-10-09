@@ -1,4 +1,10 @@
 # Changelog
+## 1.10.0
+- Add UIScene lifecycle support on iOS (`FlutterSceneLifeCycleDelegate`), removing the "uses deprecated application lifecycle events" warning.
+- Update minimum requirements: Flutter >=3.38.0 and iOS 12.0.
+- Fix push notification opens and deep links received on iOS cold start not being processed: they are now handled once the session has started.
+- Add support for AGP built-in Kotlin on Android (`android.builtInKotlin=true`): the plugin no longer applies the Kotlin Gradle Plugin when the app uses it.
+
 ## 1.9.0
 - Update native SDK dependencies: 4.17.0 for iOS and 4.17.0 for Android.
 - Add new method `login()` to register an anonymous login event without user identifier.
